@@ -1,0 +1,63 @@
+[
+    {
+        "TAGGED USER": "MSPM",
+        "OB": "114080.02",
+        "PRINCIPAL": "61207.59",
+        "INTEREST": "",
+        "LPA": "4561.7",
+        "LPD": "09/15/2024",
+        "CREDIT LIMIT": "",
+        "CYCLE": "LEVEL 6",
+        "BLOCK CODE": "",
+        "PRODUCT TYPE": "FINTECH",
+        "EMPLOYER": "",
+        "PRIMARY ADDRESS": "1 30 F  MANALO ST  KABAYANAN KABAYANAN 1 30 F  MANALO ST  KABAYANAN KABAYANAN SAN JUAN NONE PHILIPPINES 1500",
+        "SECONDARY ADDRESS": "",
+        "TERTIARY ADDRESS": "",
+        "NEW ADDRESS": "",
+        "HOME PHONE": "",
+        "WORK PHONE": "",
+        "MOBILE PHONE": "9214197886",
+        "NEW CONTACT": "",
+        "EMAIL": "plukgenaline.flores@gmail.com",
+        "BIRTHDAY": "03/10/1981",
+        "NEW OB": "",
+        "NEW CUTOFF": ""
+    }
+]
+
+[
+    {
+        "MIN_DUEDATE": "10/09/2024",
+        "DPD": "159",
+        "ACCOUNTSTATE": "PRE-RECOV/M6",
+        "INSTALMENTAMOUNT": "6339.07",
+        "TOTALBALANCE": "114080.02",
+        "PRINCIPALBALANCE": "76997.3",
+        "INTERESTBALANCE": "13909.25",
+        "DATE_EXPECTED_MATURITY": "01/09/2026",
+        "TOTALBALANCE_ON_ENDORSEMENT_START": "112431.45",
+        "TOTALDUE_ON_ENDORSEMENT_START": "59559.02",
+        "ACCOUNT_DPD": "91-180 DPD",
+        "ACCOUNTID": "RTZX2309",
+        "GENDER": "FEMALE",
+        "Pri Area": "nan",
+        "Pri City/Muni": "nan",
+        "Pri Brgy": "nan",
+        "Pri Zip Code": "nan",
+        "Sec Area": "nan",
+        "Sec City/Muni": "nan",
+        "Sec Brgy": "nan",
+        "Sec Zip Code": "nan",
+        "Ter Area": "nan",
+        "Ter City/Muni": "nan",
+        "Ter Brgy": "nan",
+        "Ter Zip Code": "nan",
+        "AGE": "44",
+        "DISBURSEMENT_DATE": "07/09/2024",
+        "LOAN_AMOUNT": "nan",
+        "PLACEMENT": "GGIVES",
+        "DATE_GENERATED": "03/17/2025"
+    }
+]
+
