@@ -61,3 +61,165 @@
     }
 ]
 
+Result Date
+Agent
+Disposition
+Sub Disposition
+Start Date
+End Date
+Amount
+Notes
+Number Contacted
+OR Number - optional
+Contact Source - optional
+Dispo Source - optional
+Intent - optional
+RFD - optional
+New Email - optional
+New Contact - optional
+New Address - optional
+Barcoded By
+
+
+[
+    {
+        "RESULT DATE": "2025-03-26 15:38:26",
+        "AGENT": "APMAMARIL",
+        "DISPOSITION": "FOLLOW UP CALL",
+        "SUB DISPOSITION": "CBR OUT OF COVERAGE UNATT",
+        "AMOUNT": "5825950.07",
+        "PTP AMOUNT": "",
+        "PTP DATE": "",
+        "CLAIM PAID AMOUNT": "",
+        "CLAIM PAID DATE": "",
+        "NOTES": "SPMA | 13 PTP - 0449608840 0444641903 | FFUP PTP",
+        "NUMBER CONTACTED": "",
+        "BARCODED BY": "KPPIMENTEL"
+    },
+    {
+        "RESULT DATE": "2025-03-24 09:30:00",
+        "AGENT": "APMAMARIL",
+        "DISPOSITION": "EMAIL BLAST SENT",
+        "SUB DISPOSITION": "WAITING FOR REPLY",
+        "AMOUNT": "5825950.07",
+        "PTP AMOUNT": "",
+        "PTP DATE": "",
+        "CLAIM PAID AMOUNT": "",
+        "CLAIM PAID DATE": "",
+        "NOTES": "SPMA | 12 With PA - melvinh062284@gmail.com | Sent Email (FFUP TEMPLATE)",
+        "NUMBER CONTACTED": "",
+        "BARCODED BY": "ZMJEPOLLO"
+    },
+    {
+        "RESULT DATE": "2025-03-24 08:53:52",
+        "AGENT": "APMAMARIL",
+        "DISPOSITION": "BULK SMS SENT",
+        "SUB DISPOSITION": "BULK SMS SENT",
+        "AMOUNT": "5825950.07",
+        "PTP AMOUNT": "",
+        "PTP DATE": "",
+        "CLAIM PAID AMOUNT": "",
+        "CLAIM PAID DATE": "",
+        "NOTES": "Good day!\nThis is an early and friendly reminder regarding your payment for this month of March on your   account.\n\nPlease settle your monthly payment on or before your due date.\n\n*If you have already made this payment, please disregard this notice. Instead, kindly send us proof of payment to accurately update your account status.\n\nShould you have any questions, do not hesitate to contact us.\nThank you for your prompt attention to this matter and looking forward to your understanding and cooperation. \n--\nSP Madrid",
+        "NUMBER CONTACTED": "09175748267",
+        "BARCODED BY": "ZMJEPOLLO"
+    },
+    {
+        "RESULT DATE": "2025-03-24 08:53:51",
+        "AGENT": "APMAMARIL",
+        "DISPOSITION": "BULK SMS SENT",
+        "SUB DISPOSITION": "BULK SMS SENT",
+        "AMOUNT": "5825950.07",
+        "PTP AMOUNT": "",
+        "PTP DATE": "",
+        "CLAIM PAID AMOUNT": "",
+        "CLAIM PAID DATE": "",
+        "NOTES": "Good day!\nThis is an early and friendly reminder regarding your payment for this month of March on your   account.\n\nPlease settle your monthly payment on or before your due date.\n\n*If you have already made this payment, please disregard this notice. Instead, kindly send us proof of payment to accurately update your account status.\n\nShould you have any questions, do not hesitate to contact us.\nThank you for your prompt attention to this matter and looking forward to your understanding and cooperation. \n--\nSP Madrid",
+        "NUMBER CONTACTED": "09280699042",
+        "BARCODED BY": "ZMJEPOLLO"
+    },
+    {
+        "RESULT DATE": "2025-03-24 08:53:50",
+        "AGENT": "APMAMARIL",
+        "DISPOSITION": "BULK SMS SENT",
+        "SUB DISPOSITION": "BULK SMS SENT",
+        "AMOUNT": "5825950.07",
+        "PTP AMOUNT": "",
+        "PTP DATE": "",
+        "CLAIM PAID AMOUNT": "",
+        "CLAIM PAID DATE": "",
+        "NOTES": "Good day!\nThis is an early and friendly reminder regarding your payment for this month of March on your   account.\n\nPlease settle your monthly payment on or before your due date.\n\n*If you have already made this payment, please disregard this notice. Instead, kindly send us proof of payment to accurately update your account status.\n\nShould you have any questions, do not hesitate to contact us.\nThank you for your prompt attention to this matter and looking forward to your understanding and cooperation. \n--\nSP Madrid",
+        "NUMBER CONTACTED": "09068484909",
+        "BARCODED BY": "ZMJEPOLLO"
+    },
+    {
+        "RESULT DATE": "2025-03-24 08:53:50",
+        "AGENT": "APMAMARIL",
+        "DISPOSITION": "BULK SMS SENT",
+        "SUB DISPOSITION": "BULK SMS SENT",
+        "AMOUNT": "5825950.07",
+        "PTP AMOUNT": "",
+        "PTP DATE": "",
+        "CLAIM PAID AMOUNT": "",
+        "CLAIM PAID DATE": "",
+        "NOTES": "Good day!\nThis is an early and friendly reminder regarding your payment for this month of March on your   account.\n\nPlease settle your monthly payment on or before your due date.\n\n*If you have already made this payment, please disregard this notice. Instead, kindly send us proof of payment to accurately update your account status.\n\nShould you have any questions, do not hesitate to contact us.\nThank you for your prompt attention to this matter and looking forward to your understanding and cooperation. \n--\nSP Madrid",
+        "NUMBER CONTACTED": "09190568418",
+        "BARCODED BY": "ZMJEPOLLO"
+    },
+    {
+        "RESULT DATE": "2025-03-20 13:24:38",
+        "AGENT": "APMAMARIL",
+        "DISPOSITION": "FOLLOW UP CALL",
+        "SUB DISPOSITION": "CBR OUT OF COVERAGE UNATT",
+        "AMOUNT": "5825950.07",
+        "PTP AMOUNT": "",
+        "PTP DATE": "",
+        "CLAIM PAID AMOUNT": "",
+        "CLAIM PAID DATE": "",
+        "NOTES": "SPMA | 10 With PTP - 0459821568 0289821568 | OUT OF COVERAGE AREA",
+        "NUMBER CONTACTED": "",
+        "BARCODED BY": "KPPIMENTEL"
+    },
+    {
+        "RESULT DATE": "2025-03-19 13:22:01",
+        "AGENT": "APMAMARIL",
+        "DISPOSITION": "FOLLOW UP CALL",
+        "SUB DISPOSITION": "BUSY",
+        "AMOUNT": "5825950.07",
+        "PTP AMOUNT": "",
+        "PTP DATE": "",
+        "CLAIM PAID AMOUNT": "",
+        "CLAIM PAID DATE": "",
+        "NOTES": "SPMA | 10 With PTP - 0449608840 0444641903 | FFUP CALL - BUSY",
+        "NUMBER CONTACTED": "",
+        "BARCODED BY": "KPPIMENTEL"
+    },
+    {
+        "RESULT DATE": "2025-03-18 11:57:07",
+        "AGENT": "APMAMARIL",
+        "DISPOSITION": "FOLLOW UP CALL",
+        "SUB DISPOSITION": "BUSY",
+        "AMOUNT": "5825950.07",
+        "PTP AMOUNT": "",
+        "PTP DATE": "",
+        "CLAIM PAID AMOUNT": "",
+        "CLAIM PAID DATE": "",
+        "NOTES": "SPMA | 10 With PTP - 0449608840 0444641903 | FFUP CALL - BUSY",
+        "NUMBER CONTACTED": "",
+        "BARCODED BY": "KPPIMENTEL"
+    },
+    {
+        "RESULT DATE": "2025-03-17 13:15:22",
+        "AGENT": "APMAMARIL",
+        "DISPOSITION": "FOLLOW UP CALL",
+        "SUB DISPOSITION": "BUSY",
+        "AMOUNT": "5825950.07",
+        "PTP AMOUNT": "",
+        "PTP DATE": "",
+        "CLAIM PAID AMOUNT": "",
+        "CLAIM PAID DATE": "",
+        "NOTES": "SPMA | 10 With PTP - 0449608840 0444641903 | FFUP CALL",
+        "NUMBER CONTACTED": "",
+        "BARCODED BY": "KPPIMENTEL"
+    }
+]
