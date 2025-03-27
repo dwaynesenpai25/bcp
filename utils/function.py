@@ -1,6 +1,7 @@
 import pandas as pd
 from time import time
 from sqlalchemy import text
+import streamlit as st
 
 def fetch_data(query, connection):
     try:

@@ -2,8 +2,9 @@ import os
 from dotenv import load_dotenv
 from urllib.parse import quote_plus
 from sqlalchemy import create_engine
-
-
+import paramiko
+import streamlit as st
+from ftplib import FTP
 def db_engine(credential_type, port=None):
     try:
      
@@ -43,4 +44,24 @@ def db_engine(credential_type, port=None):
     except Exception as e:
         error_message = f"An error occurred while creating the database engine: {str(e)}"
         print(error_message)  # For logging
+        return None
+
+def connect_to_ftp(hostname, port, username, password):
+    """Establish a connection to the FTP server and return the FTP client."""
+    try:
+        # Initialize FTP client
+        ftp = FTP()
+        
+        # Debugging: Log connection attempt
+        st.write(f"Attempting to connect to {hostname}:{port} as {username}...")
+        
+        # Connect and login
+        ftp.connect(host=hostname, port=port, timeout=10)
+        ftp.login(user=username, passwd=password)
+        
+        st.write(f"Successfully connected to FTP server at {hostname}:{port}")
+        return ftp
+        
+    except Exception as e:
+        st.error(f"Failed to connect to FTP: {str(e)}")
         return None
