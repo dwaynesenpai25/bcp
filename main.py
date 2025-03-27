@@ -228,7 +228,8 @@ def process_data(selected_client, selected_client_id, selected_port, config_path
             # Assuming remove_data is defined elsewhere in utils.function
             dar_df = dar_raw.copy()
             dar_df = remove_data(dar_raw, status_code_col='STATUS CODE', remark_col='NOTES')
-            dar_df.loc[dar_df["DISPOSITION"] == "BULK SMS SENT", "NOTES"] = ""
+            # dar_df.loc[dar_df["DISPOSITION"] == "BULK SMS SENT", "NOTES"] = ""
+            dar_df['NOTES'] = dar_df['NOTES'].str.replace('\n', ' ', regex=False)
             st.write(dar_df)
             st.success("Data fetched successfully!")
 
