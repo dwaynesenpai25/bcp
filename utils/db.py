@@ -53,13 +53,13 @@ def connect_to_ftp(hostname, port, username, password):
         ftp = FTP()
         
         # Debugging: Log connection attempt
-        st.write(f"Attempting to connect to {hostname}:{port} as {username}...")
+        # st.write(f"Attempting to connect to {hostname}:{port} as {username}...")
         
         # Connect and login
         ftp.connect(host=hostname, port=port, timeout=10)
         ftp.login(user=username, passwd=password)
         
-        st.write(f"Successfully connected to FTP server at {hostname}:{port}")
+        st.write(f"✅ Successfully connected to FTP server at {hostname}:{port}")
         return ftp
         
     except Exception as e:
