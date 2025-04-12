@@ -17,6 +17,11 @@ def get_raw_file(file, sheet_name=None, engine=None):
                  File Path: {file}''')
 
         return pd.DataFrame([])
+
+def read_sql_file(filename):
+    """Read SQL query from a file."""
+    with open(filename, "r", encoding="utf-8") as file:
+        return file.read()
     
     
 def fetch_data(query, connection):
