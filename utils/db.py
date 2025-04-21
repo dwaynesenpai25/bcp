@@ -5,6 +5,8 @@ from sqlalchemy import create_engine
 import paramiko
 import streamlit as st
 from ftplib import FTP
+
+
 def db_engine(credential_type, port=None):
     try:
      
@@ -64,4 +66,23 @@ def connect_to_ftp(hostname, port, username, password):
         
     except Exception as e:
         st.error(f"Failed to connect to FTP: {str(e)}")
+        return None
+    
+def connect_to_sftp(hostname, port, username, password):
+    """Establish a connection to the SFTP server and return the SFTP client."""
+    try:
+        # Create a new SSH client
+        transport = paramiko.Transport((hostname, port))
+        
+        # Connect using username and password
+        transport.connect(username=username, password=password)
+        
+        # Create an SFTP client from the transport
+        sftp = paramiko.SFTPClient.from_transport(transport)
+        
+        st.write(f"✅ Successfully connected to SFTP server at {hostname}:{port}")
+        return sftp
+    
+    except Exception as e:
+        st.error(f"❌ Failed to connect to SFTP: {str(e)}")
         return None

@@ -24,16 +24,16 @@ class BCPAutomation:
             df = fetch_data(sql_query, volare)
 
             total_time = time() - start_time
-            st.success(f"All CLIENTS have been fetched for {selected_env} ✅ Total time: {total_time:.2f} seconds.")
+            print(f"All CLIENTS have been fetched for {selected_env} ✅ Total time: {total_time:.2f} seconds.")
 
             if df is not None and not df.empty:
                 return df
             else:
-                st.warning("No clients found.")
+                print("No clients found.")
                 return None
 
         except SQLAlchemyError as e:
-            st.error(f"Database error: {e}")
+            print(f"Database error: {e}")
             return None
     
     def active(self, selected_client_id, selected_port):
@@ -45,16 +45,16 @@ class BCPAutomation:
             df = fetch_data(sql_query, volare)
 
             total_time = time() - start_time
-            st.success(f"All Active accounts have been fetched  ✅ Total time: {total_time:.2f} seconds.")
+            print(f"All Active accounts have been fetched  ✅ Total time: {total_time:.2f} seconds.")
 
             if df is not None and not df.empty:
                 return df
             else:
-                st.warning("No clients found.")
+                print("No clients found.")
                 return None
 
         except SQLAlchemyError as e:
-            st.error(f"Database error: {e}")
+            print(f"Database error: {e}")
             return None
 
 
@@ -64,16 +64,16 @@ class BCPAutomation:
         debtor_ids = ids
         
         if not debtor_ids:
-            st.warning("No valid debtor IDs found.")
+            print("No valid debtor IDs found.")
             return None
 
         try:
             volare = db_engine('volare', selected_port)
-            status_text = st.empty()
+            # status_text = st.empty()
 
-            mappings = load_mappings(selected_client, self.config_path)
+            mappings = load_mappings("Info", self.config_path)
             if not mappings:
-                st.warning(f"No mappings found for {selected_client}.")
+                print(f"No mappings found for {selected_client}.")
                 return None
 
             select_clause = ",\n".join([f"{db_col} AS '{mapped_col}'" for db_col, mapped_col in mappings])
@@ -91,35 +91,35 @@ class BCPAutomation:
                     id_list=id_list
                 )
 
-                status_text.text(f"Processing chunk {idx}/{total_chunks} ({len(chunk)} records)...")
+                print(f"Processing chunk {idx}/{total_chunks} ({len(chunk)} records)...")
                 df_chunk = fetch_data(sql_query, volare)
                 if df_chunk is not None and not df_chunk.empty:
                     all_data.append(df_chunk)
 
             total_time = time() - start_time
-            status_text.text(f"Processing INFO completed ✅ Total time: {total_time:.2f} seconds.")
+            print(f"Processing INFO completed ✅ Total time: {total_time:.2f} seconds.")
 
             if all_data:
                 final_df = pd.concat(all_data, ignore_index=True)
                 return final_df
             else:
-                st.warning("No data found for the given debtor IDs.")
+                print("No data found for the given debtor IDs.")
                 return None
 
         except SQLAlchemyError as e:
-            st.error(f"Database error: {e}")
+            print(f"Database error: {e}")
             return None
 
     def _fetch_data_in_chunks(self, debtor_ids, selected_client_id, selected_port, 
                             sql_file, chunk_size, process_name):
         """Helper method to fetch data in chunks from database."""
         if not debtor_ids:
-            st.warning(f"No debtor IDs provided for {process_name} query. Skipping query.")
+            print(f"No debtor IDs provided for {process_name} query. Skipping query.")
             return None
         
         try:
             volare = db_engine('volare', selected_port)
-            status_text = st.empty()
+            # status_text = st.empty()
             all_data = []
             total_chunks = (len(debtor_ids) // chunk_size) + 1
             start_time = time()
@@ -128,18 +128,18 @@ class BCPAutomation:
             for idx, chunk in enumerate(chunk_list(debtor_ids, chunk_size), start=1):
                 id_list = ', '.join(map(str, chunk))
                 sql_query = sql_template.format(selected_client_id=selected_client_id, id_list=id_list)
-                status_text.text(f"Processing chunk {idx}/{total_chunks} ({len(chunk)} records)...")
+                print(f"Processing chunk {idx}/{total_chunks} ({len(chunk)} records)...")
                 df_chunk = fetch_data(sql_query, volare)
                 if df_chunk is not None and not df_chunk.empty:
                     all_data.append(df_chunk)
 
             total_time = time() - start_time
-            status_text.text(f"Processing {process_name} completed ✅ Total time: {total_time:.2f} seconds.")
+            print(f"Processing {process_name} completed ✅ Total time: {total_time:.2f} seconds.")
 
             return pd.concat(all_data, ignore_index=True) if all_data else None
             
         except SQLAlchemyError as e:
-            st.error(f"Database error: {e}")
+            print(f"Database error: {e}")
             return None
 
     def contact(self, debtor_ids, selected_client_id, selected_port):
@@ -159,9 +159,15 @@ class BCPAutomation:
 
     def process_data(self, selected_client, selected_client_id, selected_port):
         df_active = self.active(selected_client_id, selected_port)
+    
+        # Check if df_active is None and return None if true
+        if df_active is None:
+            print(f"No active data found for client ID {selected_client_id}. Returning None.")
+            return None
+            
         ids = df_active['Acct_Num'].dropna().unique().tolist()
-        st.code(f"Debtor IDs: {ids.__len__()}")
-        st.dataframe(df_active)
+        print(f"Debtor IDs: {ids.__len__()}")
+        print(df_active)
         df = self.info(ids, selected_client, selected_client_id, selected_port)
         try:
             if not df.empty:
@@ -170,43 +176,57 @@ class BCPAutomation:
                 contact_df = self.contact(debtor_ids, selected_client_id, selected_port)
                 dar_raw = self.dar(debtor_ids, selected_client_id, selected_port)
 
-                status_text = st.empty()
-                status_text.text("Processing Templated Data...")
+                # status_text = st.empty()
+                print("Processing Templated Data...")
                 start_time = time()
 
                 dar_df = dar_raw.copy()
                 dar_df = remove_data(dar_raw, status_code_col='STATUS CODE', remark_col='NOTES')
                 dar_df.loc[:, 'NOTES'] = dar_df['NOTES'].str.replace('\n', ' ', regex=False)
-
+               
                 date_columns = ["birthday", "endorsement_date", "cutoff_date"]
                 df[date_columns] = df[date_columns].apply(lambda x: pd.to_datetime(x, errors='coerce')).apply(lambda x: x.dt.strftime('%m/%d/%Y'))
 
-                contact_dict = (
-                    contact_df.groupby("ch_code")["number"]
-                    .apply(lambda x: prioritize_phones(x.tolist()))
-                    .to_dict()
-                )
+                df["phone1"] = ''
+                df["phone2"] = ''
+                df["phone3"] = ''
+                df["phone4"] = ''
+                df["phone5"] = ''
 
-                df["phone1"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[0])
-                df["phone2"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[1])
-                df["phone3"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[2])
-                df["phone4"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[3])
-                df["phone5"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[4])
+                if contact_df is not None:
+                    contact_dict = (
+                        contact_df.groupby("ch_code")["number"]
+                        .apply(lambda x: prioritize_phones(x.tolist()))
+                        .to_dict()
+                    )
 
-                df = df.apply(update_phone1, axis=1)
-                df = df.apply(fix_phone1, axis=1)
-                df = df.apply(format_phone_numbers, axis=1)
+                    df["phone1"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[0])
+                    df["phone2"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[1])
+                    df["phone3"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[2])
+                    df["phone4"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[3])
+                    df["phone5"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[4])
+        
+                    df = df.apply(update_phone1, axis=1)
+                    df = df.apply(fix_phone1, axis=1)
+                    df = df.apply(format_phone_numbers, axis=1)
 
-                address_dict = address_df.groupby("ch_code")["address"].apply(list).to_dict()
-                df["address1"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[0])
-                df["address2"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[1] if len(address_dict.get(x, [])) > 1 else "")
-                df["address3"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[2] if len(address_dict.get(x, [])) > 2 else "")
-                df["address4"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[3] if len(address_dict.get(x, [])) > 3 else "")
-                df["address5"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[4] if len(address_dict.get(x, [])) > 4 else "")
+                df["address1"] = ''
+                df["address2"] = ''
+                df["address3"] = ''
+                df["address4"] = ''
+                df["address5"] = ''
 
+                if address_df is not None:
+                    address_dict = address_df.groupby("ch_code")["address"].apply(list).to_dict()
+                    df["address1"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[0])
+                    df["address2"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[1] if len(address_dict.get(x, [])) > 1 else "")
+                    df["address3"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[2] if len(address_dict.get(x, [])) > 2 else "")
+                    df["address4"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[3] if len(address_dict.get(x, [])) > 3 else "")
+                    df["address5"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[4] if len(address_dict.get(x, [])) > 4 else "")
+                
                 mappings = load_mappings(selected_client, self.config_path)
                 mapped_columns = [mapped_col for _, mapped_col in mappings]
-
+               
                 fixed_account_fields = {
                     "TAGGED USER": "collector",
                     "OB": "outstanding_balance",
@@ -229,7 +249,7 @@ class BCPAutomation:
                 additional_exclusions = ["ch_code", "name", "ch_name", "account_number", "outstanding_balance", 
                                        "principal", "endorsement_date", "cutoff_date"]
                 excluded_cols = account_cols + additional_exclusions
-
+              
                 def create_account_info(row):
                     account_dict = {}
                     for key, col in fixed_account_fields.items():
@@ -239,7 +259,7 @@ class BCPAutomation:
                     return json.dumps([account_dict])
 
                 df["account_information"] = df.apply(create_account_info, axis=1)
-
+           
                 def create_additional_info(row):
                     additional_dict = {}
                     for col in mapped_columns:
@@ -249,7 +269,7 @@ class BCPAutomation:
                     return json.dumps([additional_dict])
 
                 df["additional_information"] = df.apply(create_additional_info, axis=1)
-
+               
                 dar_columns = {
                     "RESULT DATE": "RESULT DATE",
                     "AGENT": "AGENT",
@@ -269,7 +289,7 @@ class BCPAutomation:
                 dar_df.loc[:, "RESULT DATE"] = pd.to_datetime(dar_df["RESULT DATE"], errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
                 dar_df.loc[:, "PTP DATE"] = pd.to_datetime(dar_df["PTP DATE"], format='%d/%m/%Y', errors='coerce').dt.strftime('%m/%d/%y')
                 dar_df.loc[:, "CLAIM PAID DATE"] = pd.to_datetime(dar_df["CLAIM PAID DATE"], format='%d/%m/%Y', errors='coerce').dt.strftime('%m/%d/%y')
-
+               
                 dar_df_sorted = dar_df.sort_values("RESULT DATE", ascending=False).copy()
                 dar_grouped = dar_df_sorted.groupby("ch_code").apply(
                     lambda x: [
@@ -277,7 +297,7 @@ class BCPAutomation:
                         for row in x[list(dar_columns.values())].values
                     ][:10]
                 ).to_dict()
-
+               
                 df["history_information"] = df["ch_code"].map(lambda x: json.dumps(dar_grouped.get(x, [])))
 
                 extra_columns = ["ptp_amount", "ptp_date_start", "ptp_date_end", "or_number", "new_contact", 
@@ -285,49 +305,51 @@ class BCPAutomation:
                 for col in extra_columns:
                     df[col] = ""
                 df["field_result_information"] = ""
-
+                print( "21",df.columns)
                 columns = ["ch_code", "name", "ch_name", "account_number", "outstanding_balance", "principal", 
                          "endorsement_date", "cutoff_date", "phone1", "phone2", "phone3", "phone4", "phone5", 
                          "address1", "address2", "address3", "address4", "address5"] + extra_columns + ["account_information", "additional_information", "field_result_information", "history_information"]
                 df_filtered = df[columns].fillna("")
- 
+              
                 total_time = time() - start_time
-                status_text.text(f"Processing Templated Data Completed ✅ Total time: {total_time:.2f} seconds.")
+                print(f"Processing Templated Data Completed ✅ Total time: {total_time:.2f} seconds.")
                 return df_filtered
         
         except Exception as e:
-            st.error(f"Error fetching data")
+            print(f"Error fetching data")
+            return None
 
-    def init_ftp(self, df_filtered, selected_client, chunk_size, status):
+    def init_ftp(self, df_filtered, selected_client, chunk_size):
         try:
             ftp_hostname = os.getenv("FTP_HOSTNAME")
             ftp_port = int(os.getenv("FTP_PORT", 21))
             ftp_username = os.getenv("FTP_USERNAME")
             ftp_password = os.getenv("FTP_PASSWORD")
+            # ftp_base_remote_path = "/admin/ACTIVE/backup/LEADS"
             ftp_base_remote_path = "/admins/RPA OUTPUT/GENERAL/BCP LEADS"
             filename_base = f"{selected_client}-{pd.Timestamp.now().strftime('%Y-%m-%d')}"
 
             if not all([ftp_hostname, ftp_username, ftp_password]):
-                st.error("FTP credentials (hostname, username, or password) are missing from the .env file.")
+                print("FTP credentials (hostname, username, or password) are missing from the .env file.")
             else:
                 self.upload_to_ftp(df_filtered, ftp_hostname, ftp_port, ftp_username, ftp_password, ftp_base_remote_path, filename_base, selected_client, chunk_size)
-            status.update(label="Report creation completed!", state="complete")
+            # status.update(label="Report creation completed!", state="complete")
 
         except Exception as e:
-            st.error(f"Error in remove_data: {e}")
+            print(f"Error in remove_data: {e}")
             raise
 
     def upload_to_ftp(self, df, hostname, port, username, password, base_remote_path, filename_base, selected_client, chunk_size):
         """Upload all DataFrame chunks as CSV and XLSX files in a single ZIP to an FTP server."""
         try:
-            st.text("🔍 Checking directory structure...")
+            print("🔍 Checking directory structure...")
             current_date = datetime.now()
             year = current_date.strftime("%Y")
             month = current_date.strftime("%b")
             client_folder = selected_client.lower()
             remote_path = os.path.join(base_remote_path, year, month, client_folder).replace("\\", "/")
 
-            st.text("🔌 Connecting to FTP server...")
+            print("🔌 Connecting to FTP server...")
             ftp = connect_to_ftp(hostname, port, username, password)
             if ftp is None:
                 raise Exception("FTP connection failed")
@@ -339,14 +361,14 @@ class BCPAutomation:
                     ftp.cwd(current_path)
                 except:
                     ftp.mkd(current_path)
-                    st.text(f"📁 Created directory: {current_path}")
+                    print(f"📁 Created directory: {current_path}")
 
             ftp.cwd(remote_path)
 
             total_rows = len(df)
             num_chunks = (total_rows + chunk_size - 1) // chunk_size
 
-            st.text(f"📊 Splitting data into {num_chunks} chunk(s)...")
+            print(f"📊 Splitting data into {num_chunks} chunk(s)...")
             temp_files = []
             for i in range(num_chunks):
                 start_idx = i * chunk_size
@@ -367,7 +389,7 @@ class BCPAutomation:
 
             zip_base_name = f"{filename_base}.zip"
             zip_temp_file = f"/tmp/{zip_base_name}"
-            st.text("📦 Compressing files into ZIP...")
+            print("📦 Compressing files into ZIP...")
             with zipfile.ZipFile(zip_temp_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
                 for temp_file, arcname in temp_files:
                     zipf.write(temp_file, arcname)
@@ -379,12 +401,12 @@ class BCPAutomation:
                 zip_filename = f"{filename_base}({counter}).zip"
                 counter += 1
 
-            st.text(f"🚀 Uploading `{zip_filename}`...")
+            print(f"🚀 Uploading `{zip_filename}`...")
             with open(zip_temp_file, 'rb') as f:
                 ftp.storbinary(f"STOR {zip_filename}", f)
 
-            st.success(f"✅ Uploaded `{zip_filename}` to:")
-            st.code(f"`{remote_path}`")
+            print(f"✅ Uploaded `{zip_filename}` to:")
+            print(f"`{remote_path}`")
 
             for temp_file, _ in temp_files:
                 os.remove(temp_file)
@@ -392,51 +414,71 @@ class BCPAutomation:
             ftp.quit()
 
         except Exception as e:
-            st.error(f"❌ Failed to upload files to FTP: {str(e)}")
+            print(f"❌ Failed to upload files to FTP: {str(e)}")
 
     def display(self):
-        st.header("📤 CMS - AMEYO")
-        
-        chunk_size = st.number_input("Enter Chunk Size:", min_value=1, value=5000, step=100)
+        print("📤 CMS - AMEYO")
 
-        env_options = ["ENV1", "ENV2", "ENV3"]
+        # Static chunk size and environment
+        chunk_size = 5000
+        selected_env = "ENV1"
         env_port_mapping = {"ENV1": 3306, "ENV2": 3307, "ENV3": 3308}
-
-        selected_env = st.selectbox("Select Environment", env_options)
         selected_port = env_port_mapping[selected_env]
 
-        if selected_env:
-            client_df = self.client_id(selected_env, selected_port)
-        else:
-            st.warning("No clients available.")
+        print(f"Selected environment: {selected_env}")
+        print(f"Using port: {selected_port}")
+        print(f"Chunk size: {chunk_size}\n")
+
+        # Fetch client list
+        # client_df = self.client_id(selected_env, selected_port)
+        # client_df = pd.DataFrame({
+        #     'name': [
+        #         'PRELEGAL BDO CARDS', 'LEGAL BNB MSME', 'LEGAL BNB SL', 'LEGAL BPI BSL', 'LEGAL RCBC',
+        #         'LEGAL SBC', 'PRELEGAL BNB MSME', 'PRELEGAL BNB SL', 'PRELEGAL BPI BSL', 'PRELEGAL BPI CARDS',
+        #         'PRELEGAL HSBC', 'PRELEGAL RCBC', 'PRELEGAL SBC', 'LEGAL CSB MCL', 'PRELEGAL CSB MCL'
+        #     ],
+        #     'id': [
+        #         100, 103, 104, 106, 109, 110, 113, 114, 115, 116, 118, 119, 120, 126, 127
+        #     ]
+        # })
+
+        client_df = pd.DataFrame({
+            'name': [
+                'RCBC'
+                
+            ],
+            'id': [
+                 84
+            ]
+        })
+
 
         if client_df is not None and not client_df.empty:
             client_dict = dict(zip(client_df['name'], client_df['id']))
-            selected_client = st.selectbox("Select Client", options=client_dict.keys())
-            selected_client_id = client_dict[selected_client]
+            print(f"📋 Found {len(client_dict)} clients. Starting data processing...\n")
+
+            for client_name, client_id in client_dict.items():
+                print(f"🔄 Processing client: {client_name} (ID: {client_id})")
+
+                # Always load mappings from the 'Info' sheet
+                mappings = load_mappings("Info", self.config_path)
+                if not mappings:
+                    print("⚠️ No mappings found in the 'Info' sheet. Skipping.\n")
+                    continue
+
+                df_filtered = self.process_data(client_name, client_id, selected_port)
+                print(f"📊 Data processed for: {df_filtered}")
+
+                if df_filtered is None:
+                    print(f"⚠️ No active data found for {client_name}. Skipping to next client.\n")
+                    continue
+
+                if not df_filtered.empty:
+                    print(f"✅ Data fetched for {client_name}. Sending to FTP...")
+                    self.init_ftp(df_filtered, client_name, chunk_size)
+                    print(f"📤 FTP upload completed for {client_name}\n")
+                else:
+                    print(f"⚠️ No data returned for {client_name}. Skipping.\n")
         else:
-            st.warning("No clients available.")
+            print("❌ No clients available for this environment.")
 
-        # st.info("Note: Excel file should have column('accountid') with a value of debtor account number.")
-        # file = st.file_uploader("Upload File", type='xlsx')
-
-        # if selected_client and selected_client_id and file and selected_env:
-        if selected_client and selected_client_id  and selected_env:
-            create_btn = st.button("Get Data")
-            
-            if create_btn:
-                with st.status("Creating report...", expanded=True) as status:
-                    # debtor_id = get_raw_file(file)
-                    # df_filtered = self.process_data(debtor_id, selected_client, selected_client_id, selected_port)
-                    df_filtered = self.process_data(selected_client, selected_client_id, selected_port)
-
-                    if df_filtered is not None:
-                        st.success("Data fetched successfully!")
-                        st.write("Final Data:")
-                        st.write(df_filtered)
-                        self.init_ftp(df_filtered, selected_client, chunk_size, status)
-                    else:
-                        st.error("No data fetched.")
-                        status.update(label="Report creation failed!", state="error")
-        else:
-            st.warning("Please select a client and upload the needed file.")
