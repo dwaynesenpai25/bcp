@@ -11,8 +11,8 @@ def get_raw_file(file, sheet_name=None, engine=None):
             return pd.read_excel(file, sheet_name=sheet_name, engine=engine, dtype=str)
     
     except Exception as e:
-        st.write(e)
-        st.error(f'''**ERROR:** File doesn\'t exist! Please check the file path and try again.
+        print(e)
+        print(f'''**ERROR:** File doesn\'t exist! Please check the file path and try again.
                  
                  File Path: {file}''')
 
@@ -53,7 +53,7 @@ def remove_data(result, status_code_col='STATUS CODE', remark_col='REMARK'):
         
         return result
     except Exception as e:
-        st.error(f"Error in remove_data: {e}")
+        print(f"Error in remove_data: {e}")
         raise
 
 def clean_and_split_numbers(number):
@@ -115,7 +115,7 @@ def load_mappings(client_name, config_path):
         mappings = list(zip(df_client_mappings["Database Column"], df_client_mappings["Mapped Column"]))
         return mappings
     except ValueError:
-        st.error(f"No sheet found for {client_name} in {config_path}")
+        print(f"No sheet found for {client_name} in {config_path}")
         return []
 
 def chunk_list(lst, chunk_size):

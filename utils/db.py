@@ -54,18 +54,15 @@ def connect_to_ftp(hostname, port, username, password):
         # Initialize FTP client
         ftp = FTP()
         
-        # Debugging: Log connection attempt
-        # st.write(f"Attempting to connect to {hostname}:{port} as {username}...")
-        
         # Connect and login
         ftp.connect(host=hostname, port=port, timeout=10)
         ftp.login(user=username, passwd=password)
         
-        st.write(f"✅ Successfully connected to FTP server at {hostname}:{port}")
+        print(f"✅ Successfully connected to FTP server at {hostname}:{port}")
         return ftp
         
     except Exception as e:
-        st.error(f"Failed to connect to FTP: {str(e)}")
+        print(f"Failed to connect to FTP: {str(e)}")
         return None
     
 def connect_to_sftp(hostname, port, username, password):
@@ -80,9 +77,9 @@ def connect_to_sftp(hostname, port, username, password):
         # Create an SFTP client from the transport
         sftp = paramiko.SFTPClient.from_transport(transport)
         
-        st.write(f"✅ Successfully connected to SFTP server at {hostname}:{port}")
+        print(f"✅ Successfully connected to SFTP server at {hostname}:{port}")
         return sftp
     
     except Exception as e:
-        st.error(f"❌ Failed to connect to SFTP: {str(e)}")
+        print(f"❌ Failed to connect to SFTP: {str(e)}")
         return None

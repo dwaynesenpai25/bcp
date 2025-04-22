@@ -14,7 +14,6 @@ class BCPAutomation:
     def __init__(self):
         self.config_path = "/home/spm/Documents/BCP2/config/config.xlsx"
 
-    @st.cache_data(ttl=600)
     def client_id(_self, selected_env, selected_port):
         """Fetch current month's contact data from the database in chunks."""
         try:
@@ -24,9 +23,11 @@ class BCPAutomation:
             df = fetch_data(sql_query, volare)
 
             total_time = time() - start_time
-            print(f"All CLIENTS have been fetched for {selected_env} ✅ Total time: {total_time:.2f} seconds.")
+
 
             if df is not None and not df.empty:
+                print(df)
+                print(f"All CLIENTS have been fetched for {selected_env} ✅ Total time: {total_time:.2f} seconds.")
                 return df
             else:
                 print("No clients found.")
@@ -50,7 +51,7 @@ class BCPAutomation:
             if df is not None and not df.empty:
                 return df
             else:
-                print("No clients found.")
+                print("No active accounts found.")
                 return None
 
         except SQLAlchemyError as e:
@@ -69,7 +70,7 @@ class BCPAutomation:
 
         try:
             volare = db_engine('volare', selected_port)
-            # status_text = st.empty()
+
 
             mappings = load_mappings("Info", self.config_path)
             if not mappings:
@@ -119,7 +120,6 @@ class BCPAutomation:
         
         try:
             volare = db_engine('volare', selected_port)
-            # status_text = st.empty()
             all_data = []
             total_chunks = (len(debtor_ids) // chunk_size) + 1
             start_time = time()
@@ -176,7 +176,6 @@ class BCPAutomation:
                 contact_df = self.contact(debtor_ids, selected_client_id, selected_port)
                 dar_raw = self.dar(debtor_ids, selected_client_id, selected_port)
 
-                # status_text = st.empty()
                 print("Processing Templated Data...")
                 start_time = time()
 
@@ -305,7 +304,7 @@ class BCPAutomation:
                 for col in extra_columns:
                     df[col] = ""
                 df["field_result_information"] = ""
-                print( "21",df.columns)
+
                 columns = ["ch_code", "name", "ch_name", "account_number", "outstanding_balance", "principal", 
                          "endorsement_date", "cutoff_date", "phone1", "phone2", "phone3", "phone4", "phone5", 
                          "address1", "address2", "address3", "address4", "address5"] + extra_columns + ["account_information", "additional_information", "field_result_information", "history_information"]
@@ -347,7 +346,7 @@ class BCPAutomation:
             year = current_date.strftime("%Y")
             month = current_date.strftime("%b")
             client_folder = selected_client.lower()
-            remote_path = os.path.join(base_remote_path, year, month, client_folder).replace("\\", "/")
+            remote_path = os.path.join(base_remote_path, year, month, client_folder, "CMS").replace("\\", "/")
 
             print("🔌 Connecting to FTP server...")
             ftp = connect_to_ftp(hostname, port, username, password)
@@ -355,7 +354,7 @@ class BCPAutomation:
                 raise Exception("FTP connection failed")
 
             current_path = base_remote_path
-            for folder in [year, month, client_folder]:
+            for folder in [year, month, client_folder, "CMS"]:
                 current_path = os.path.join(current_path, folder).replace("\\", "/")
                 try:
                     ftp.cwd(current_path)
@@ -430,7 +429,7 @@ class BCPAutomation:
         print(f"Chunk size: {chunk_size}\n")
 
         # Fetch client list
-        # client_df = self.client_id(selected_env, selected_port)
+        client_df = self.client_id(selected_env, selected_port)
         # client_df = pd.DataFrame({
         #     'name': [
         #         'PRELEGAL BDO CARDS', 'LEGAL BNB MSME', 'LEGAL BNB SL', 'LEGAL BPI BSL', 'LEGAL RCBC',
@@ -442,15 +441,15 @@ class BCPAutomation:
         #     ]
         # })
 
-        client_df = pd.DataFrame({
-            'name': [
-                'RCBC'
+        # client_df = pd.DataFrame({
+        #     'name': [
+        #         'RCBC'
                 
-            ],
-            'id': [
-                 84
-            ]
-        })
+        #     ],
+        #     'id': [
+        #          84
+        #     ]
+        # })
 
 
         if client_df is not None and not client_df.empty:
