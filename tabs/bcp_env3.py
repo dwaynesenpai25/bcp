@@ -10,9 +10,9 @@ from time import time
 from utils.db import *
 from utils.function import *
 
-class BCPAutomation:
+class BCPAutomationE3:
     def __init__(self):
-        self.config_path = "/home/spm/Documents/BCP2/config/config.xlsx"
+        self.config_path = "/home/ubuntu/bcp/config/config.xlsx"
 
     def client_id(_self, selected_env, selected_port):
         """Fetch current month's contact data from the database in chunks."""
@@ -23,8 +23,10 @@ class BCPAutomation:
             df = fetch_data(sql_query, volare)
 
             total_time = time() - start_time
-          
+
+
             if df is not None and not df.empty:
+                print(df)
                 print(f"All CLIENTS have been fetched for {selected_env} ✅ Total time: {total_time:.2f} seconds.")
                 return df
             else:
@@ -49,7 +51,7 @@ class BCPAutomation:
             if df is not None and not df.empty:
                 return df
             else:
-                print("No clients found.")
+                print("No active accounts found.")
                 return None
 
         except SQLAlchemyError as e:
@@ -69,6 +71,7 @@ class BCPAutomation:
         try:
             volare = db_engine('volare', selected_port)
 
+
             mappings = load_mappings("Info", self.config_path)
             if not mappings:
                 print(f"No mappings found for {selected_client}.")
@@ -87,7 +90,7 @@ class BCPAutomation:
                     select_clause=select_clause,
                     selected_client_id=selected_client_id,
                     id_list=id_list
-                )
+                )  
 
                 print(f"Processing chunk {idx}/{total_chunks} ({len(chunk)} records)...")
                 df_chunk = fetch_data(sql_query, volare)
@@ -315,24 +318,116 @@ class BCPAutomation:
             print(f"Error fetching data")
             return None
 
+    # def init_ftp(self, df_filtered, selected_client, chunk_size):
+    #     try:
+    #         ftp_hostname = os.getenv("NMKT_FTP_HOSTNAME")
+    #         ftp_port = int(os.getenv("NMKT_FTP_PORT", 21))
+    #         ftp_username = os.getenv("NMKT_FTP_USERNAME")
+    #         ftp_password = os.getenv("NMKT_FTP_PASSWORD")
+    #         ftp_base_remote_path = "/admin/ACTIVE/backup/LEADS"
+    #         # ftp_base_remote_path = "/admins/RPA OUTPUT/GENERAL/BCP LEADS"
+    #         filename_base = f"{selected_client}-{pd.Timestamp.now().strftime('%Y-%m-%d')}"
+    #         print(f"Uploading to server: {ftp_hostname}")
+
+    #         if not all([ftp_hostname, ftp_username, ftp_password]):
+    #             print("FTP credentials (hostname, username, or password) are missing from the .env file.")
+    #         else:
+    #             self.upload_to_ftp(df_filtered, ftp_hostname, ftp_port, ftp_username, ftp_password, ftp_base_remote_path, filename_base, selected_client, chunk_size)
+    #         # status.update(label="Report creation completed!", state="complete")
+
+    #     except Exception as e:
+    #         print(f"Error in remove_data: {e}")
+    #         raise
+
     def init_ftp(self, df_filtered, selected_client, chunk_size):
         try:
-            ftp_hostname = os.getenv("FTP_HOSTNAME")
-            ftp_port = int(os.getenv("FTP_PORT", 21))
-            ftp_username = os.getenv("FTP_USERNAME")
-            ftp_password = os.getenv("FTP_PASSWORD")
-            # ftp_base_remote_path = "/admin/ACTIVE/backup/LEADS"
-            ftp_base_remote_path = "/admins/RPA OUTPUT/GENERAL/BCP LEADS"
+            # Define the FTP server configurations
+            ftp_servers = [
+                {
+                    "hostname": os.getenv("NMKT_FTP_HOSTNAME"),
+                    "port": int(os.getenv("NMKT_FTP_PORT", 21)),
+                    "username": os.getenv("NMKT_FTP_USERNAME"),
+                    "password": os.getenv("NMKT_FTP_PASSWORD")
+                },
+                {
+                    "hostname": os.getenv("PITX_FTP_HOSTNAME"),
+                    "port": int(os.getenv("PITX_FTP_PORT", 21)),
+                    "username": os.getenv("PITX_FTP_USERNAME"),
+                    "password": os.getenv("PITX_FTP_PASSWORD")
+                },
+                {
+                    "hostname": os.getenv("PAN_FTP_HOSTNAME"),
+                    "port": int(os.getenv("PAN_FTP_PORT", 21)),
+                    "username": os.getenv("PAN_FTP_USERNAME"),
+                    "password": os.getenv("PAN_FTP_PASSWORD")
+                }
+            ]
+            # Common FTP settings
+            ftp_base_remote_path = "/admin/ACTIVE/backup/LEADS"
             filename_base = f"{selected_client}-{pd.Timestamp.now().strftime('%Y-%m-%d')}"
 
-            if not all([ftp_hostname, ftp_username, ftp_password]):
-                print("FTP credentials (hostname, username, or password) are missing from the .env file.")
-            else:
-                self.upload_to_ftp(df_filtered, ftp_hostname, ftp_port, ftp_username, ftp_password, ftp_base_remote_path, filename_base, selected_client, chunk_size)
-            # status.update(label="Report creation completed!", state="complete")
+            # Iterate through each FTP server
+            for server in ftp_servers:
+                if not all([server["hostname"], server["username"], server["password"]]):
+                    print(f"FTP credentials missing for server {server['hostname'] or 'unknown'}")
+                    continue  # Skip this server if credentials are incomplete
+
+                print(f"Connecting to server: {server['hostname']}")
+                # Establish FTP connection
+                ftp = connect_to_ftp(server["hostname"], server["port"], server["username"], server["password"])
+                if ftp is None:
+                    print(f"Failed to connect to FTP server {server['hostname']}")
+                    continue
+
+                try:
+                    # Ensure ftp_base_remote_path exists
+                    print(f"Ensuring base path exists: {ftp_base_remote_path}")
+                    current_path = "/"
+                    path_components = [p for p in ftp_base_remote_path.split("/") if p]
+                    for component in path_components:
+                        current_path = os.path.join(current_path, component).replace("\\", "/")
+                        try:
+                            ftp.cwd(current_path)  # Try to navigate to the directory
+                        except:
+                            try:
+                                print(f"Creating directory: {current_path}")
+                                ftp.mkd(current_path)
+                                ftp.cwd(current_path)
+                            except Exception as e:
+                                if "550" in str(e):
+                                    print(f"Permission denied creating {current_path} on {server['hostname']}. Check FTP user permissions.")
+                                else:
+                                    print(f"Failed to create {current_path} on {server['hostname']}: {e}")
+                                raise Exception(f"Unable to ensure base path {ftp_base_remote_path} on {server['hostname']}") from e
+
+                    print(f"Base path {ftp_base_remote_path} is ready")
+
+                    # Proceed with upload
+                    print(f"Uploading to server: {server['hostname']}")
+                    self.upload_to_ftp(
+                        df_filtered,
+                        server["hostname"],
+                        server["port"],
+                        server["username"],
+                        server["password"],
+                        ftp_base_remote_path,
+                        filename_base,
+                        selected_client,
+                        chunk_size
+                    )
+                except Exception as e:
+                    print(f"Error processing FTP server {server['hostname']}: {e}")
+                    continue  # Continue with the next server
+                finally:
+                    try:
+                        ftp.quit()
+                    except:
+                        pass
+
+            print(f"📤 FTP upload completed for {selected_client}")
 
         except Exception as e:
-            print(f"Error in remove_data: {e}")
+            print(f"Error in init_ftp: {e}")
             raise
 
     def upload_to_ftp(self, df, hostname, port, username, password, base_remote_path, filename_base, selected_client, chunk_size):
@@ -343,7 +438,7 @@ class BCPAutomation:
             year = current_date.strftime("%Y")
             month = current_date.strftime("%b")
             client_folder = selected_client.lower()
-            remote_path = os.path.join(base_remote_path, year, month, client_folder, "CMS").replace("\\", "/")
+            remote_path = os.path.join(base_remote_path, year, "CMS ENV3",  month, client_folder).replace("\\", "/")
 
             print("🔌 Connecting to FTP server...")
             ftp = connect_to_ftp(hostname, port, username, password)
@@ -351,7 +446,7 @@ class BCPAutomation:
                 raise Exception("FTP connection failed")
 
             current_path = base_remote_path
-            for folder in [year, month, client_folder, "CMS"]:
+            for folder in [year, "CMS ENV3", month, client_folder]:
                 current_path = os.path.join(current_path, folder).replace("\\", "/")
                 try:
                     ftp.cwd(current_path)
@@ -396,7 +491,7 @@ class BCPAutomation:
             while zip_filename in existing_files:
                 zip_filename = f"{filename_base}({counter}).zip"
                 counter += 1
-
+     
             print(f"🚀 Uploading `{zip_filename}`...")
             with open(zip_temp_file, 'rb') as f:
                 ftp.storbinary(f"STOR {zip_filename}", f)
@@ -411,6 +506,8 @@ class BCPAutomation:
 
         except Exception as e:
             print(f"❌ Failed to upload files to FTP: {str(e)}")
+
+
 
     def display(self):
         print("📤 CMS - AMEYO")
@@ -440,11 +537,11 @@ class BCPAutomation:
 
         client_df = pd.DataFrame({
             'name': [
-                'PRELEGAL BPI CARDS'
+                'RCBC'
                 
             ],
             'id': [
-                 116
+                 84
             ]
         })
 

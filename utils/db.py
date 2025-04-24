@@ -6,7 +6,6 @@ import paramiko
 import streamlit as st
 from ftplib import FTP
 
-
 def db_engine(credential_type, port=None):
     try:
      
@@ -57,7 +56,7 @@ def connect_to_ftp(hostname, port, username, password):
         # Connect and login
         ftp.connect(host=hostname, port=port, timeout=10)
         ftp.login(user=username, passwd=password)
-        
+        ftp.set_pasv(False)
         print(f"✅ Successfully connected to FTP server at {hostname}:{port}")
         return ftp
         

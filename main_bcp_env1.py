@@ -1,7 +1,7 @@
-from tabs.bcp_env1 import BCPAutomation
+from tabs.bcp_env1 import BCPAutomationE1
 
 def main():
-    bcp = BCPAutomation()
+    bcp = BCPAutomationE1()
     bcp.display()
 
 if __name__ == "__main__":
