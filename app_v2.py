@@ -10,8 +10,6 @@ def main():
         print("BCPAutomationE1 completed.")
     except Exception as e:
         print(f"BCPAutomationE1 failed: {e}")
-        # Continue to E2 even if E1 fails; uncomment the next line to stop on failure
-        # return
 
     try:
         print("Starting BCPAutomationE2...")
@@ -20,7 +18,7 @@ def main():
         print("BCPAutomationE2 completed.")
     except Exception as e:
         print(f"BCPAutomationE2 failed: {e}")
-        
+
 
     try:
         print("Starting BCPAutomationE3...")

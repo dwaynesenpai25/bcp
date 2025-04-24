@@ -318,27 +318,6 @@ class BCPAutomationE3:
             print(f"Error fetching data")
             return None
 
-    # def init_ftp(self, df_filtered, selected_client, chunk_size):
-    #     try:
-    #         ftp_hostname = os.getenv("NMKT_FTP_HOSTNAME")
-    #         ftp_port = int(os.getenv("NMKT_FTP_PORT", 21))
-    #         ftp_username = os.getenv("NMKT_FTP_USERNAME")
-    #         ftp_password = os.getenv("NMKT_FTP_PASSWORD")
-    #         ftp_base_remote_path = "/admin/ACTIVE/backup/LEADS"
-    #         # ftp_base_remote_path = "/admins/RPA OUTPUT/GENERAL/BCP LEADS"
-    #         filename_base = f"{selected_client}-{pd.Timestamp.now().strftime('%Y-%m-%d')}"
-    #         print(f"Uploading to server: {ftp_hostname}")
-
-    #         if not all([ftp_hostname, ftp_username, ftp_password]):
-    #             print("FTP credentials (hostname, username, or password) are missing from the .env file.")
-    #         else:
-    #             self.upload_to_ftp(df_filtered, ftp_hostname, ftp_port, ftp_username, ftp_password, ftp_base_remote_path, filename_base, selected_client, chunk_size)
-    #         # status.update(label="Report creation completed!", state="complete")
-
-    #     except Exception as e:
-    #         print(f"Error in remove_data: {e}")
-    #         raise
-
     def init_ftp(self, df_filtered, selected_client, chunk_size):
         try:
             # Define the FTP server configurations

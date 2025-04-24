@@ -79,22 +79,93 @@ class ExtractAmeyo:
 
     def init_ftp(self, df_filtered, selected_client, chunk_size):
         try:
-            ftp_hostname = os.getenv("FTP_HOSTNAME")
-            ftp_port = int(os.getenv("FTP_PORT", 21))
-            ftp_username = os.getenv("FTP_USERNAME")
-            ftp_password = os.getenv("FTP_PASSWORD")
-            # ftp_base_remote_path = "/admin/ACTIVE/backup/LEADS"
-            ftp_base_remote_path = "/admins/RPA OUTPUT/GENERAL/BCP LEADS"
+            # Define the FTP server configurations
+            ftp_servers = [
+                {
+                    "hostname": os.getenv("NMKT_FTP_HOSTNAME"),
+                    "port": int(os.getenv("NMKT_FTP_PORT", 21)),
+                    "username": os.getenv("NMKT_FTP_USERNAME"),
+                    "password": os.getenv("NMKT_FTP_PASSWORD")
+                },
+                {
+                    "hostname": os.getenv("PITX_FTP_HOSTNAME"),
+                    "port": int(os.getenv("PITX_FTP_PORT", 21)),
+                    "username": os.getenv("PITX_FTP_USERNAME"),
+                    "password": os.getenv("PITX_FTP_PASSWORD")
+                },
+                {
+                    "hostname": os.getenv("PAN_FTP_HOSTNAME"),
+                    "port": int(os.getenv("PAN_FTP_PORT", 21)),
+                    "username": os.getenv("PAN_FTP_USERNAME"),
+                    "password": os.getenv("PAN_FTP_PASSWORD")
+                }
+            ]
+            # Common FTP settings
+            ftp_base_remote_path = "/admin/ACTIVE/backup/LEADS"
             filename_base = f"{selected_client}-{pd.Timestamp.now().strftime('%Y-%m-%d')}"
 
-            if not all([ftp_hostname, ftp_username, ftp_password]):
-                print("FTP credentials (hostname, username, or password) are missing from the .env file.")
-            else:
-                self.upload_to_ftp(df_filtered, ftp_hostname, ftp_port, ftp_username, ftp_password, ftp_base_remote_path, filename_base, selected_client, chunk_size)
-            # status.update(label="Report creation completed!", state="complete")
+            # Iterate through each FTP server
+            for server in ftp_servers:
+                if not all([server["hostname"], server["username"], server["password"]]):
+                    print(f"FTP credentials missing for server {server['hostname'] or 'unknown'}")
+                    continue  # Skip this server if credentials are incomplete
+
+                print(f"Connecting to server: {server['hostname']}")
+                # Establish FTP connection
+                ftp = connect_to_ftp(server["hostname"], server["port"], server["username"], server["password"])
+                if ftp is None:
+                    print(f"Failed to connect to FTP server {server['hostname']}")
+                    continue
+
+                try:
+                    # Ensure ftp_base_remote_path exists
+                    print(f"Ensuring base path exists: {ftp_base_remote_path}")
+                    current_path = "/"
+                    path_components = [p for p in ftp_base_remote_path.split("/") if p]
+                    for component in path_components:
+                        current_path = os.path.join(current_path, component).replace("\\", "/")
+                        try:
+                            ftp.cwd(current_path)  # Try to navigate to the directory
+                        except:
+                            try:
+                                print(f"Creating directory: {current_path}")
+                                ftp.mkd(current_path)
+                                ftp.cwd(current_path)
+                            except Exception as e:
+                                if "550" in str(e):
+                                    print(f"Permission denied creating {current_path} on {server['hostname']}. Check FTP user permissions.")
+                                else:
+                                    print(f"Failed to create {current_path} on {server['hostname']}: {e}")
+                                raise Exception(f"Unable to ensure base path {ftp_base_remote_path} on {server['hostname']}") from e
+
+                    print(f"Base path {ftp_base_remote_path} is ready")
+
+                    # Proceed with upload
+                    print(f"Uploading to server: {server['hostname']}")
+                    self.upload_to_ftp(
+                        df_filtered,
+                        server["hostname"],
+                        server["port"],
+                        server["username"],
+                        server["password"],
+                        ftp_base_remote_path,
+                        filename_base,
+                        selected_client,
+                        chunk_size
+                    )
+                except Exception as e:
+                    print(f"Error processing FTP server {server['hostname']}: {e}")
+                    continue  # Continue with the next server
+                finally:
+                    try:
+                        ftp.quit()
+                    except:
+                        pass
+
+            print(f"📤 FTP upload completed for {selected_client}")
 
         except Exception as e:
-            print(f"Error in remove_data: {e}")
+            print(f"Error in init_ftp: {e}")
             raise
 
     def upload_to_ftp(self, df, hostname, port, username, password, base_remote_path, filename_base, selected_client, chunk_size):
