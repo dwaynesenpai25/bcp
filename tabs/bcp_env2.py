@@ -19,7 +19,7 @@ class BCPAutomationE2:
         try:
             volare = db_engine('volare', selected_port)
             start_time = time()
-            sql_query = read_sql_file("query/fetch_clients.sql")
+            sql_query = read_sql_file("/home/ubuntu/bcp/query/fetch_clients.sql")
             df = fetch_data(sql_query, volare)
 
             total_time = time() - start_time
@@ -41,7 +41,7 @@ class BCPAutomationE2:
         try:
             volare = db_engine('volare', selected_port)
             start_time = time()
-            sql_template = read_sql_file("query/fetch_active.sql")
+            sql_template = read_sql_file("/home/ubuntu/bcp/query/fetch_active.sql")
             sql_query = sql_template.format(selected_client_id=selected_client_id)
             df = fetch_data(sql_query, volare)
 
@@ -82,7 +82,7 @@ class BCPAutomationE2:
             total_chunks = (len(debtor_ids) // 10000) + 1
             start_time = time()
 
-            sql_template = read_sql_file("query/fetch_info.sql")
+            sql_template = read_sql_file("/home/ubuntu/bcp/query/fetch_info.sql")
 
             for idx, chunk in enumerate(chunk_list(debtor_ids, 10000), start=1):
                 id_list = ', '.join(f"'{id}'" for id in chunk)
@@ -145,17 +145,17 @@ class BCPAutomationE2:
     def contact(self, debtor_ids, selected_client_id, selected_port):
         """Fetch current month's contact data."""
         return self._fetch_data_in_chunks(debtor_ids, selected_client_id, selected_port,
-                                        "query/fetch_contact.sql", 10000, "Contact")
+                                        "/home/ubuntu/bcp/fetch_contact.sql", 10000, "Contact")
 
     def address(self, debtor_ids, selected_client_id, selected_port):
         """Fetch current month's address data."""
         return self._fetch_data_in_chunks(debtor_ids, selected_client_id, selected_port,
-                                        "query/fetch_address.sql", 10000, "Address")
+                                        "/home/ubuntu/bcp/query/fetch_address.sql", 10000, "Address")
 
     def dar(self, debtor_ids, selected_client_id, selected_port):
         """Fetch the 10 latest dispositions per debtor account."""
         return self._fetch_data_in_chunks(debtor_ids, selected_client_id, selected_port,
-                                        "query/fetch_dar.sql", 5000, "DAR")
+                                        "/home/ubuntu/bcp/query/fetch_dar.sql", 5000, "DAR")
 
     def process_data(self, selected_client, selected_client_id, selected_port):
         df_active = self.active(selected_client_id, selected_port)
@@ -167,7 +167,7 @@ class BCPAutomationE2:
             
         ids = df_active['Acct_Num'].dropna().unique().tolist()
         print(f"Debtor IDs: {ids.__len__()}")
-        print(df_active)
+        # print(df_active)
         df = self.info(ids, selected_client, selected_client_id, selected_port)
         try:
             if not df.empty:
@@ -223,7 +223,7 @@ class BCPAutomationE2:
                     df["address4"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[3] if len(address_dict.get(x, [])) > 3 else "")
                     df["address5"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[4] if len(address_dict.get(x, [])) > 4 else "")
                 
-                mappings = load_mappings(selected_client, self.config_path)
+                mappings = load_mappings("Info", self.config_path)
                 mapped_columns = [mapped_col for _, mapped_col in mappings]
                
                 fixed_account_fields = {
@@ -358,7 +358,7 @@ class BCPAutomationE2:
                 if ftp is None:
                     print(f"Failed to connect to FTP server {server['hostname']}")
                     continue
-
+                print(f"✅ Successfully connected to FTP server at {server["hostname"]}:{server["port"]}")
                 try:
                     # Ensure ftp_base_remote_path exists
                     print(f"Ensuring base path exists: {ftp_base_remote_path}")
@@ -403,8 +403,6 @@ class BCPAutomationE2:
                         ftp.quit()
                     except:
                         pass
-
-            print(f"📤 FTP upload completed for {selected_client}")
 
         except Exception as e:
             print(f"Error in init_ftp: {e}")
@@ -478,7 +476,7 @@ class BCPAutomationE2:
 
             print(f"✅ Uploaded `{zip_filename}` to:")
             print(f"`{remote_path}`")
-
+            print(f"========================================================================================")
             for temp_file, _ in temp_files:
                 os.remove(temp_file)
             os.remove(zip_temp_file)
@@ -503,7 +501,7 @@ class BCPAutomationE2:
         print(f"Chunk size: {chunk_size}\n")
 
         # Fetch client list
-        # client_df = self.client_id(selected_env, selected_port)
+        client_df = self.client_id(selected_env, selected_port)
         # client_df = pd.DataFrame({
         #     'name': [
         #         'PRELEGAL BDO CARDS', 'LEGAL BNB MSME', 'LEGAL BNB SL', 'LEGAL BPI BSL', 'LEGAL RCBC',
@@ -515,15 +513,15 @@ class BCPAutomationE2:
         #     ]
         # })
 
-        client_df = pd.DataFrame({
-            'name': [
-                'RCBC'
+        # client_df = pd.DataFrame({
+        #     'name': [
+        #         'RCBC'
                 
-            ],
-            'id': [
-                 84
-            ]
-        })
+        #     ],
+        #     'id': [
+        #          84
+        #     ]
+        # })
 
 
         if client_df is not None and not client_df.empty:
@@ -540,7 +538,7 @@ class BCPAutomationE2:
                     continue
 
                 df_filtered = self.process_data(client_name, client_id, selected_port)
-                print(f"📊 Data processed for: {df_filtered}")
+                # print(f"📊 Data processed for: {df_filtered}")
 
                 if df_filtered is None:
                     print(f"⚠️ No active data found for {client_name}. Skipping to next client.\n")
@@ -549,7 +547,6 @@ class BCPAutomationE2:
                 if not df_filtered.empty:
                     print(f"✅ Data fetched for {client_name}. Sending to FTP...")
                     self.init_ftp(df_filtered, client_name, chunk_size)
-                    print(f"📤 FTP upload completed for {client_name}\n")
                 else:
                     print(f"⚠️ No data returned for {client_name}. Skipping.\n")
         else:

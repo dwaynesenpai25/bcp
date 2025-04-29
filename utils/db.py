@@ -12,7 +12,8 @@ def db_engine(credential_type, port=None):
         # Get the absolute path of the current file's directory
         current_working_dir = os.getcwd()
        
-        env_path = os.path.join(current_working_dir, 'config', '.env')
+        # env_path = os.path.join(current_working_dir, 'config', '.env')
+        env_path = "/home/ubuntu/bcp/config/.env"
         load_dotenv(dotenv_path=env_path)
       
         # Convert credential_type to lowercase for consistency
@@ -57,7 +58,6 @@ def connect_to_ftp(hostname, port, username, password):
         ftp.connect(host=hostname, port=port, timeout=10)
         ftp.login(user=username, passwd=password)
         ftp.set_pasv(False)
-        print(f"✅ Successfully connected to FTP server at {hostname}:{port}")
         return ftp
         
     except Exception as e:

@@ -164,14 +164,14 @@ class ExtractAmeyo:
             year = current_date.strftime("%Y")
             month = current_date.strftime("%b")
             client_folder = selected_client.lower()
-            remote_path = os.path.join(base_remote_path, year, month, client_folder, "AMEYO").replace("\\", "/")
+            remote_path = os.path.join(base_remote_path, year,"AMEYO", month, client_folder).replace("\\", "/")
 
             ftp = connect_to_ftp(hostname, port, username, password)
             if ftp is None:
                 raise Exception("FTP connection failed")
 
             current_path = base_remote_path
-            for folder in [year, month, client_folder, "AMEYO"]:
+            for folder in [year, "AMEYO", month, client_folder]:
                 current_path = os.path.join(current_path, folder).replace("\\", "/")
                 try:
                     ftp.cwd(current_path)

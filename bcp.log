@@ -1,0 +1,339 @@
+/home/ubuntu/bcp/tabs/bcp_env3.py:187: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
+  df[date_columns] = df[date_columns].apply(lambda x: pd.to_datetime(x, errors='coerce')).apply(lambda x: x.dt.strftime('%m/%d/%Y'))
+Starting BCPAutomationE1...
+📤 CMS - AMEYO
+Selected environment: ENV1
+Using port: 3306
+Chunk size: 5000
+
+📋 Found 1 clients. Starting data processing...
+
+🔄 Processing client: RCBC (ID: 84)
+Query executed in 0.43 seconds
+All Active accounts have been fetched  ✅ Total time: 0.43 seconds.
+Debtor IDs: 3
+              Acct_Num
+0  6080000000000227473
+1  6080000000000910343
+2  6080000000001203257
+Processing chunk 1/1 (3 records)...
+Query executed in 0.45 seconds
+Processing INFO completed ✅ Total time: 0.45 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.43 seconds
+Processing Address completed ✅ Total time: 0.43 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.44 seconds
+Processing Contact completed ✅ Total time: 0.44 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.54 seconds
+Processing DAR completed ✅ Total time: 0.54 seconds.
+Processing Templated Data...
+No sheet found for RCBC in /home/ubuntu/bcp/config/config.xlsx
+Processing Templated Data Completed ✅ Total time: 0.03 seconds.
+📊 Data processed for:    ch_code  ...                                history_information
+0  5990433  ...  [{"RESULT DATE": "2025-04-28 12:45:38", "AGENT...
+1  5990434  ...  [{"RESULT DATE": "2025-04-21 09:30:23", "AGENT...
+2  5990436  ...  [{"RESULT DATE": "2025-04-28 12:45:38", "AGENT...
+
+[3 rows x 32 columns]
+✅ Data fetched for RCBC. Sending to FTP...
+Connecting to server: 192.168.15.241
+✅ Successfully connected to FTP server at 192.168.15.241:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.15.241
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+✅ Successfully connected to FTP server at 192.168.15.241:21
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29(2).zip`...
+✅ Uploaded `RCBC-2025-04-29(2).zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV1/Apr/rcbc`
+Connecting to server: 192.168.223.251
+✅ Successfully connected to FTP server at 192.168.223.251:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.223.251
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+✅ Successfully connected to FTP server at 192.168.223.251:21
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29(3).zip`...
+✅ Uploaded `RCBC-2025-04-29(3).zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV1/Apr/rcbc`
+Connecting to server: 192.168.100.254
+✅ Successfully connected to FTP server at 192.168.100.254:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.100.254
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+✅ Successfully connected to FTP server at 192.168.100.254:21
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29(3).zip`...
+✅ Uploaded `RCBC-2025-04-29(3).zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV1/Apr/rcbc`
+📤 FTP upload completed for RCBC
+📤 FTP upload completed for RCBC
+
+BCPAutomationE1 completed.
+Starting BCPAutomationE2...
+📤 CMS - AMEYO
+Selected environment: ENV2
+Using port: 3307
+Chunk size: 5000
+
+📋 Found 1 clients. Starting data processing...
+
+🔄 Processing client: RCBC (ID: 84)
+Query executed in 3.04 seconds
+All Active accounts have been fetched  ✅ Total time: 3.04 seconds.
+No active accounts found.
+No active data found for client ID 84. Returning None.
+📊 Data processed for: None
+⚠️ No active data found for RCBC. Skipping to next client.
+
+BCPAutomationE2 completed.
+Starting BCPAutomationE3...
+📤 CMS - AMEYO
+Selected environment: ENV3
+Using port: 3308
+Chunk size: 5000
+
+📋 Found 1 clients. Starting data processing...
+
+🔄 Processing client: RCBC (ID: 84)
+Query executed in 0.98 seconds
+All Active accounts have been fetched  ✅ Total time: 0.98 seconds.
+Debtor IDs: 3
+       Acct_Num
+0  347003200070
+1  347003220576
+2  347001785871
+Processing chunk 1/1 (3 records)...
+Query executed in 0.47 seconds
+Processing INFO completed ✅ Total time: 0.47 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.58 seconds
+Processing Address completed ✅ Total time: 0.58 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.62 seconds
+Processing Contact completed ✅ Total time: 0.62 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.86 seconds
+Processing DAR completed ✅ Total time: 0.86 seconds.
+Processing Templated Data...
+No sheet found for RCBC in /home/ubuntu/bcp/config/config.xlsx
+Processing Templated Data Completed ✅ Total time: 0.03 seconds.
+📊 Data processed for:    ch_code  ...                                history_information
+0  4660560  ...  [{"RESULT DATE": "2025-04-24 16:31:28", "AGENT...
+1  4660556  ...  [{"RESULT DATE": "2025-04-28 17:50:56", "AGENT...
+2  4660558  ...  [{"RESULT DATE": "2025-04-25 11:41:03", "AGENT...
+
+[3 rows x 32 columns]
+✅ Data fetched for RCBC. Sending to FTP...
+Connecting to server: 192.168.15.241
+✅ Successfully connected to FTP server at 192.168.15.241:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.15.241
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+✅ Successfully connected to FTP server at 192.168.15.241:21
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29.zip`...
+✅ Uploaded `RCBC-2025-04-29.zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV3/Apr/rcbc`
+Connecting to server: 192.168.223.251
+✅ Successfully connected to FTP server at 192.168.223.251:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.223.251
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+✅ Successfully connected to FTP server at 192.168.223.251:21
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29.zip`...
+✅ Uploaded `RCBC-2025-04-29.zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV3/Apr/rcbc`
+Connecting to server: 192.168.100.254
+✅ Successfully connected to FTP server at 192.168.100.254:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.100.254
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+✅ Successfully connected to FTP server at 192.168.100.254:21
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29.zip`...
+✅ Uploaded `RCBC-2025-04-29.zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV3/Apr/rcbc`
+📤 FTP upload completed for RCBC
+📤 FTP upload completed for RCBC
+
+BCPAutomationE3 completed.
+/home/ubuntu/bcp/tabs/bcp_env3.py:187: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
+  df[date_columns] = df[date_columns].apply(lambda x: pd.to_datetime(x, errors='coerce')).apply(lambda x: x.dt.strftime('%m/%d/%Y'))
+Starting BCPAutomationE1...
+📤 CMS - AMEYO
+Selected environment: ENV1
+Using port: 3306
+Chunk size: 5000
+
+📋 Found 1 clients. Starting data processing...
+
+🔄 Processing client: RCBC (ID: 84)
+Query executed in 1.16 seconds
+All Active accounts have been fetched  ✅ Total time: 1.16 seconds.
+Debtor IDs: 3
+Processing chunk 1/1 (3 records)...
+Query executed in 0.43 seconds
+Processing INFO completed ✅ Total time: 0.43 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.43 seconds
+Processing Address completed ✅ Total time: 0.43 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.43 seconds
+Processing Contact completed ✅ Total time: 0.43 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.55 seconds
+Processing DAR completed ✅ Total time: 0.55 seconds.
+Processing Templated Data...
+Processing Templated Data Completed ✅ Total time: 0.03 seconds.
+✅ Data fetched for RCBC. Sending to FTP...
+Connecting to server: 192.168.15.241
+✅ Successfully connected to FTP server at 192.168.15.241:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.15.241
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29(13).zip`...
+✅ Uploaded `RCBC-2025-04-29(13).zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV1/Apr/rcbc`
+========================================================================================
+Connecting to server: 192.168.223.251
+✅ Successfully connected to FTP server at 192.168.223.251:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.223.251
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29(14).zip`...
+✅ Uploaded `RCBC-2025-04-29(14).zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV1/Apr/rcbc`
+========================================================================================
+Connecting to server: 192.168.100.254
+✅ Successfully connected to FTP server at 192.168.100.254:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.100.254
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29(14).zip`...
+✅ Uploaded `RCBC-2025-04-29(14).zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV1/Apr/rcbc`
+========================================================================================
+BCPAutomationE1 completed.
+========================================================================================
+========================================================================================
+Starting BCPAutomationE2...
+📤 CMS - AMEYO
+Selected environment: ENV2
+Using port: 3307
+Chunk size: 5000
+
+📋 Found 1 clients. Starting data processing...
+
+🔄 Processing client: RCBC (ID: 84)
+Query executed in 0.44 seconds
+All Active accounts have been fetched  ✅ Total time: 0.44 seconds.
+No active accounts found.
+No active data found for client ID 84. Returning None.
+⚠️ No active data found for RCBC. Skipping to next client.
+
+BCPAutomationE2 completed.
+========================================================================================
+========================================================================================
+Starting BCPAutomationE3...
+📤 CMS - AMEYO
+Selected environment: ENV3
+Using port: 3308
+Chunk size: 5000
+
+📋 Found 1 clients. Starting data processing...
+
+🔄 Processing client: RCBC (ID: 84)
+Query executed in 0.43 seconds
+All Active accounts have been fetched  ✅ Total time: 0.43 seconds.
+Debtor IDs: 3
+Processing chunk 1/1 (3 records)...
+Query executed in 0.43 seconds
+Processing INFO completed ✅ Total time: 0.43 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.43 seconds
+Processing Address completed ✅ Total time: 0.43 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.43 seconds
+Processing Contact completed ✅ Total time: 0.43 seconds.
+Processing chunk 1/1 (3 records)...
+Query executed in 0.43 seconds
+Processing DAR completed ✅ Total time: 0.43 seconds.
+Processing Templated Data...
+Processing Templated Data Completed ✅ Total time: 0.03 seconds.
+✅ Data fetched for RCBC. Sending to FTP...
+Connecting to server: 192.168.15.241
+✅ Successfully connected to FTP server at 192.168.15.241:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.15.241
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29(11).zip`...
+✅ Uploaded `RCBC-2025-04-29(11).zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV3/Apr/rcbc`
+========================================================================================
+Connecting to server: 192.168.223.251
+✅ Successfully connected to FTP server at 192.168.223.251:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.223.251
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29(11).zip`...
+✅ Uploaded `RCBC-2025-04-29(11).zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV3/Apr/rcbc`
+========================================================================================
+Connecting to server: 192.168.100.254
+✅ Successfully connected to FTP server at 192.168.100.254:21
+Ensuring base path exists: /admin/ACTIVE/backup/LEADS
+Base path /admin/ACTIVE/backup/LEADS is ready
+Uploading to server: 192.168.100.254
+🔍 Checking directory structure...
+🔌 Connecting to FTP server...
+📊 Splitting data into 1 chunk(s)...
+📦 Compressing files into ZIP...
+🚀 Uploading `RCBC-2025-04-29(11).zip`...
+✅ Uploaded `RCBC-2025-04-29(11).zip` to:
+`/admin/ACTIVE/backup/LEADS/2025/CMS ENV3/Apr/rcbc`
+========================================================================================
+BCPAutomationE3 completed.
+========================================================================================
+========================================================================================

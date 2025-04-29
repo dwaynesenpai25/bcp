@@ -8,6 +8,8 @@ def main():
         bcpe1 = BCPAutomationE1()
         bcpe1.display()
         print("BCPAutomationE1 completed.")
+        print(f"========================================================================================")
+        print(f"========================================================================================")
     except Exception as e:
         print(f"BCPAutomationE1 failed: {e}")
 
@@ -16,6 +18,8 @@ def main():
         bcpe2 = BCPAutomationE2()
         bcpe2.display()
         print("BCPAutomationE2 completed.")
+        print(f"========================================================================================")
+        print(f"========================================================================================")
     except Exception as e:
         print(f"BCPAutomationE2 failed: {e}")
 
@@ -25,6 +29,8 @@ def main():
         bcpe3 = BCPAutomationE3()
         bcpe3.display()
         print("BCPAutomationE3 completed.")
+        print(f"========================================================================================")
+        print(f"========================================================================================")
     except Exception as e:
         print(f"BCPAutomationE3 failed: {e}")
 
