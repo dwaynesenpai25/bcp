@@ -13,26 +13,26 @@ def main():
     except Exception as e:
         print(f"BCPAutomationE1 failed: {e}")
 
-    try:
-        print("Starting BCPAutomationE2...")
-        bcpe2 = BCPAutomationE2()
-        bcpe2.display()
-        print("BCPAutomationE2 completed.")
-        print(f"========================================================================================")
-        print(f"========================================================================================")
-    except Exception as e:
-        print(f"BCPAutomationE2 failed: {e}")
+    # try:
+    #     print("Starting BCPAutomationE2...")
+    #     bcpe2 = BCPAutomationE2()
+    #     bcpe2.display()
+    #     print("BCPAutomationE2 completed.")
+    #     print(f"========================================================================================")
+    #     print(f"========================================================================================")
+    # except Exception as e:
+    #     print(f"BCPAutomationE2 failed: {e}")
 
 
-    try:
-        print("Starting BCPAutomationE3...")
-        bcpe3 = BCPAutomationE3()
-        bcpe3.display()
-        print("BCPAutomationE3 completed.")
-        print(f"========================================================================================")
-        print(f"========================================================================================")
-    except Exception as e:
-        print(f"BCPAutomationE3 failed: {e}")
+    # try:
+    #     print("Starting BCPAutomationE3...")
+    #     bcpe3 = BCPAutomationE3()
+    #     bcpe3.display()
+    #     print("BCPAutomationE3 completed.")
+    #     print(f"========================================================================================")
+    #     print(f"========================================================================================")
+    # except Exception as e:
+    #     print(f"BCPAutomationE3 failed: {e}")
 
 if __name__ == "__main__":
     main()

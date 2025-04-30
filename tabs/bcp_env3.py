@@ -351,7 +351,7 @@ class BCPAutomationE3:
                     print(f"FTP credentials missing for server {server['hostname'] or 'unknown'}")
                     continue  # Skip this server if credentials are incomplete
 
-                print(f"Connecting to server: {server['hostname']}")
+                # print(f"Connecting to server: {server['hostname']}")
                
                 # Establish FTP connection
                 ftp = connect_to_ftp(server["hostname"], server["port"], server["username"], server["password"])
@@ -361,7 +361,7 @@ class BCPAutomationE3:
                 print(f"✅ Successfully connected to FTP server at {server["hostname"]}:{server["port"]}")
                 try:
                     # Ensure ftp_base_remote_path exists
-                    print(f"Ensuring base path exists: {ftp_base_remote_path}")
+                    # print(f"Ensuring base path exists: {ftp_base_remote_path}")
                     current_path = "/"
                     path_components = [p for p in ftp_base_remote_path.split("/") if p]
                     for component in path_components:
@@ -380,10 +380,10 @@ class BCPAutomationE3:
                                     print(f"Failed to create {current_path} on {server['hostname']}: {e}")
                                 raise Exception(f"Unable to ensure base path {ftp_base_remote_path} on {server['hostname']}") from e
 
-                    print(f"Base path {ftp_base_remote_path} is ready")
+                    # print(f"Base path {ftp_base_remote_path} is ready")
 
                     # Proceed with upload
-                    print(f"Uploading to server: {server['hostname']}")
+                    # print(f"Uploading to server: {server['hostname']}")
                     self.upload_to_ftp(
                         df_filtered,
                         server["hostname"],
@@ -418,7 +418,7 @@ class BCPAutomationE3:
             client_folder = selected_client.lower()
             remote_path = os.path.join(base_remote_path, year, "CMS ENV3",  month, client_folder).replace("\\", "/")
 
-            print("🔌 Connecting to FTP server...")
+            print(f"🔌 Directory `{remote_path}` is ready")
             ftp = connect_to_ftp(hostname, port, username, password)
             if ftp is None:
                 raise Exception("FTP connection failed")
@@ -474,8 +474,7 @@ class BCPAutomationE3:
             with open(zip_temp_file, 'rb') as f:
                 ftp.storbinary(f"STOR {zip_filename}", f)
 
-            print(f"✅ Uploaded `{zip_filename}` to:")
-            print(f"`{remote_path}`")
+            print(f"✅ Uploaded `{zip_filename}` to: `{remote_path}`")
             print(f"========================================================================================")
             for temp_file, _ in temp_files:
                 os.remove(temp_file)
