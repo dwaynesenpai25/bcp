@@ -165,7 +165,7 @@ class BCPAutomationE1:
             print(f"No active data found for client ID {selected_client_id}. Returning None.")
             return None
             
-        ids = df_active['Acct_Num'].dropna().unique().tolist()
+        ids = df_active['id'].dropna().unique().tolist()
         print(f"Debtor IDs: {ids.__len__()}")
         # print(df_active)
         df = self.info(ids, selected_client, selected_client_id, selected_port)
@@ -317,6 +317,8 @@ class BCPAutomationE1:
         except Exception as e:
             print(f"Error fetching data")
             return None
+
+
 
 
     def init_ftp(self, df_filtered, selected_client, chunk_size):
