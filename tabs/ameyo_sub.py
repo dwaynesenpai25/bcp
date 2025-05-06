@@ -11,7 +11,7 @@ from utils.db import connect_to_ftp  # Assuming this utility exists
 import uuid
 
 # Streamlit page configuration
-st.set_page_config(page_title="Ameyo Data Extractor")
+# st.set_page_config(page_title="Ameyo Data Extractor")
 
 class ExtractAmeyo:
     def __init__(self, db_name):
@@ -269,7 +269,7 @@ def get_cms_databases():
         st.error(f"Error fetching databases: {e}")
         return []
 
-def main():
+def ameyo_main():
     st.title("Ameyo Data Extractor")
     databases = get_cms_databases()
     
@@ -294,5 +294,5 @@ def main():
                     mime="text/csv"
                 )
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

@@ -58,59 +58,6 @@ class BCPAutomation:
             st.write(f"Database error: {e}")
             return None
 
-
-    def info(self, ids, selected_client, selected_client_id, selected_port):
-        """Fetch data for the selected client using dynamic column mappings, handling large queries in chunks."""
-        # debtor_ids = ids['Acct_Num'].dropna().unique().tolist()
-        debtor_ids = ids
-        
-        if not debtor_ids:
-            st.write("No valid debtor IDs found.")
-            return None
-
-        try:
-            volare = db_engine('volare', selected_port)
-            status_text = st.empty()
-
-            mappings = load_mappings("Info", self.config_path)
-            if not mappings:
-                st.write(f"No mappings found for {selected_client}.")
-                return None
-
-            select_clause = ",\n".join([f"{db_col} AS '{mapped_col}'" for db_col, mapped_col in mappings])
-            all_data = []
-            total_chunks = (len(debtor_ids) // 10000) + 1
-            start_time = time()
-
-            sql_template = read_sql_file("/home/ubuntu/bcp/query/fetch_info.sql")
-
-            for idx, chunk in enumerate(chunk_list(debtor_ids, 10000), start=1):
-                id_list = ', '.join(f"'{id}'" for id in chunk)
-                sql_query = sql_template.format(
-                    select_clause=select_clause,
-                    selected_client_id=selected_client_id,
-                    id_list=id_list
-                )  
-
-                status_text.text(f"Processing chunk {idx}/{total_chunks} ({len(chunk)} records)...")
-                df_chunk = fetch_data(sql_query, volare)
-                if df_chunk is not None and not df_chunk.empty:
-                    all_data.append(df_chunk)
-
-            total_time = time() - start_time
-            status_text.text(f"Processing INFO completed ✅ Total time: {total_time:.2f} seconds.")
-
-            if all_data:
-                final_df = pd.concat(all_data, ignore_index=True)
-                return final_df
-            else:
-                st.warning("No data found for the given debtor IDs.")
-                return None
-
-        except SQLAlchemyError as e:
-            st.write(f"Database error: {e}")
-            return None
-
     def _fetch_data_in_chunks(self, debtor_ids, selected_client_id, selected_port, 
                             sql_file, chunk_size, process_name):
         """Helper method to fetch data in chunks from database."""
@@ -143,20 +90,10 @@ class BCPAutomation:
             st.warning(f"Database error: {e}")
             return None
 
-    def contact(self, debtor_ids, selected_client_id, selected_port):
-        """Fetch current month's contact data."""
-        return self._fetch_data_in_chunks(debtor_ids, selected_client_id, selected_port,
-                                        "/home/ubuntu/bcp/query/fetch_contact.sql", 10000, "Contact")
-
-    def address(self, debtor_ids, selected_client_id, selected_port):
-        """Fetch current month's address data."""
-        return self._fetch_data_in_chunks(debtor_ids, selected_client_id, selected_port,
-                                        "/home/ubuntu/bcp/query/fetch_address.sql", 10000, "Address")
-
     def dar(self, debtor_ids, selected_client_id, selected_port):
         """Fetch the 10 latest dispositions per debtor account."""
         return self._fetch_data_in_chunks(debtor_ids, selected_client_id, selected_port,
-                                        "/home/ubuntu/bcp/query/fetch_dar.sql", 5000, "DAR")
+                                        "/home/ubuntu/bcp/query/fetch_stat.sql", 5000, "DAR")
 
     def process_data(self, selected_client, selected_client_id, selected_port):
         df_active = self.active(selected_client_id, selected_port)
@@ -168,152 +105,27 @@ class BCPAutomation:
             
         ids = df_active['id'].dropna().unique().tolist()
         st.write(f"Debtor IDs: {ids.__len__()}")
-        # st.write(df_active)
-        df = self.info(ids, selected_client, selected_client_id, selected_port)
         try:
-            if not df.empty:
-                debtor_ids = df['ch_code'].dropna().unique().tolist()
-                address_df = self.address(debtor_ids, selected_client_id, selected_port)
-                contact_df = self.contact(debtor_ids, selected_client_id, selected_port)
-                dar_raw = self.dar(debtor_ids, selected_client_id, selected_port)
-                status_text = st.empty()
-                status_text.text("Processing Templated Data...")
-                start_time = time()
+            dar_raw = self.dar(ids, selected_client_id, selected_port)
+            status_text = st.empty()
+            status_text.text("Processing Templated Data...")
+            start_time = time()
+            
+            dar_df = dar_raw.copy()
+            dar_df = remove_data(dar_raw, status_code_col='STATUS CODE', remark_col='REMARKS')
+            dar_df['PTP AMOUNT'] = pd.to_numeric(dar_df['PTP AMOUNT'], errors='coerce').fillna(0).astype(int)
+            dar_df['CLAIM PAID AMOUNT'] = pd.to_numeric(dar_df['CLAIM PAID AMOUNT'], errors='coerce').fillna(0).astype(int)
 
-                dar_df = dar_raw.copy()
-                dar_df = remove_data(dar_raw, status_code_col='STATUS CODE', remark_col='NOTES')
-                dar_df.loc[:, 'NOTES'] = dar_df['NOTES'].str.replace('\n', ' ', regex=False)
-               
-                date_columns = ["birthday", "endorsement_date", "cutoff_date"]
-                df[date_columns] = df[date_columns].apply(lambda x: pd.to_datetime(x, errors='coerce')).apply(lambda x: x.dt.strftime('%m/%d/%Y'))
-
-                df["phone1"] = ''
-                df["phone2"] = ''
-                df["phone3"] = ''
-                df["phone4"] = ''
-                df["phone5"] = ''
-
-                if contact_df is not None:
-                    contact_dict = (
-                        contact_df.groupby("ch_code")["number"]
-                        .apply(lambda x: prioritize_phones(x.tolist()))
-                        .to_dict()
-                    )
-
-                    df["phone1"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[0])
-                    df["phone2"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[1])
-                    df["phone3"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[2])
-                    df["phone4"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[3])
-                    df["phone5"] = df["ch_code"].map(lambda x: contact_dict.get(x, ["", "", "", "", ""])[4])
-        
-                    df = df.apply(update_phone1, axis=1)
-                    df = df.apply(fix_phone1, axis=1)
-                    df = df.apply(format_phone_numbers, axis=1)
-
-                df["address1"] = ''
-                df["address2"] = ''
-                df["address3"] = ''
-                df["address4"] = ''
-                df["address5"] = ''
-
-                if address_df is not None:
-                    address_dict = address_df.groupby("ch_code")["address"].apply(list).to_dict()
-                    df["address1"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[0])
-                    df["address2"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[1] if len(address_dict.get(x, [])) > 1 else "")
-                    df["address3"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[2] if len(address_dict.get(x, [])) > 2 else "")
-                    df["address4"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[3] if len(address_dict.get(x, [])) > 3 else "")
-                    df["address5"] = df["ch_code"].map(lambda x: address_dict.get(x, [""])[4] if len(address_dict.get(x, [])) > 4 else "")
-                
-                mappings = load_mappings("Info", self.config_path)
-                mapped_columns = [mapped_col for _, mapped_col in mappings]
-               
-                fixed_account_fields = {
-                    "TAGGED USER": "collector",
-                    "OB": "outstanding_balance",
-                    "PRINCIPAL": "principal",
-                    "CARD_NO": "card_no",
-                    "PLACEMENT": "placement",
-                    "CYCLE": "cycle",
-                    "PRODUCT TYPE": "product_type",
-                    "PRIMARY ADDRESS": "address1",
-                    "SECONDARY ADDRESS": "address2",
-                    "TERTIARY ADDRESS": "address3",
-                    "PHONE1": "phone1",
-                    "PHONE2": "phone2",
-                    "PHONE3": "phone3",
-                    "PHONE4": "phone4",
-                    "PHONE5": "phone5"
-                }
-
-                account_cols = list(fixed_account_fields.values())
-                additional_exclusions = ["ch_code", "name", "ch_name", "account_number", "outstanding_balance", 
-                                       "principal", "endorsement_date", "cutoff_date"]
-                excluded_cols = account_cols + additional_exclusions
-              
-                def create_account_info(row):
-                    account_dict = {}
-                    for key, col in fixed_account_fields.items():
-                        if col in row.index:
-                            value = row[col]
-                            account_dict[key] = "" if pd.isna(value) else str(value)
-                    return json.dumps([account_dict])
-
-                df["account_information"] = df.apply(create_account_info, axis=1)
-           
-                def create_additional_info(row):
-                    additional_dict = {}
-                    for col in mapped_columns:
-                        if col not in excluded_cols and col in row.index:
-                            value = row[col]
-                            additional_dict[col.upper()] = "" if pd.isna(value) else str(value)
-                    return json.dumps([additional_dict])
-
-                df["additional_information"] = df.apply(create_additional_info, axis=1)
-               
-                dar_columns = {
-                    "RESULT DATE": "RESULT DATE",
-                    "AGENT": "AGENT",
-                    "DISPOSITION": "DISPOSITION",
-                    "SUB DISPOSITION": "SUB DISPOSITION",
-                    "AMOUNT": "AMOUNT",
-                    "PTP AMOUNT": "PTP AMOUNT",
-                    "PTP DATE": "PTP DATE",
-                    "CLAIM PAID AMOUNT": "CLAIM PAID AMOUNT",
-                    "CLAIM PAID DATE": "CLAIM PAID DATE",
-                    "NOTES": "NOTES",
-                    "NUMBER CONTACTED": "NUMBER CONTACTED",
-                    "BARCODED BY": "BARCODED BY",
-                    "CONTACT SOURCE": "CONTACT SOURCE"
-                }
-
-                dar_df.loc[:, "RESULT DATE"] = pd.to_datetime(dar_df["RESULT DATE"], errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
-                dar_df.loc[:, "PTP DATE"] = pd.to_datetime(dar_df["PTP DATE"], format='%d/%m/%Y', errors='coerce').dt.strftime('%m/%d/%y')
-                dar_df.loc[:, "CLAIM PAID DATE"] = pd.to_datetime(dar_df["CLAIM PAID DATE"], format='%d/%m/%Y', errors='coerce').dt.strftime('%m/%d/%y')
-               
-                dar_df_sorted = dar_df.sort_values("RESULT DATE", ascending=False).copy()
-                dar_grouped = dar_df_sorted.groupby("ch_code").apply(
-                    lambda x: [
-                        {key: "" if pd.isna(row[i]) else str(row[i]) for i, key in enumerate(dar_columns.keys())}
-                        for row in x[list(dar_columns.values())].values
-                    ][:10]
-                ).to_dict()
-               
-                df["history_information"] = df["ch_code"].map(lambda x: json.dumps(dar_grouped.get(x, [])))
-
-                extra_columns = ["ptp_amount", "ptp_date_start", "ptp_date_end", "or_number", "new_contact", 
-                               "new_email_address", "source_type", "agent", "new_address", "notes"]
-                for col in extra_columns:
-                    df[col] = ""
-                df["field_result_information"] = ""
-
-                columns = ["ch_code", "name", "ch_name", "account_number", "outstanding_balance", "principal", 
-                         "endorsement_date", "cutoff_date", "phone1", "phone2", "phone3", "phone4", "phone5", 
-                         "address1", "address2", "address3", "address4", "address5"] + extra_columns + ["account_information", "additional_information", "field_result_information", "history_information"]
-                df_filtered = df[columns].fillna("")
-              
-                total_time = time() - start_time
-                status_text.text(f"Processing Templated Data Completed ✅ Total time: {total_time:.2f} seconds.")
-                return df_filtered
+            dar_df.loc[:, 'REMARKS'] = dar_df['REMARKS'].str.replace('\n', ' ', regex=False)
+            dar_df.loc[:, "BARCODE DATE"] = pd.to_datetime(dar_df["BARCODE DATE"], errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
+            dar_df.loc[:, "PTP DATE"] = pd.to_datetime(dar_df["PTP DATE"], format='%d/%m/%Y', errors='coerce').dt.strftime('%Y-%m-%d')
+            dar_df.loc[:, "CLAIM PAID DATE"] = pd.to_datetime(dar_df["CLAIM PAID DATE"], format='%d/%m/%Y', errors='coerce').dt.strftime('%Y-%m-%d')
+            df_filtered = dar_df.replace([float("inf"), float("-inf"), pd.NA, "NA", None], "").fillna("")
+            # df_filtered = dar_df.fillna("")
+            
+            total_time = time() - start_time
+            status_text.text(f"Processing Templated Data Completed ✅ Total time: {total_time:.2f} seconds.")
+            return df_filtered
         
         except Exception as e:
             st.warning(f"Error fetching data")
@@ -418,7 +230,7 @@ class BCPAutomation:
             year = current_date.strftime("%Y")
             month = current_date.strftime("%b")
             client_folder = selected_client.lower()
-            remote_path = os.path.join(base_remote_path, year, "CMS ENV1",  month, client_folder).replace("\\", "/")
+            remote_path = os.path.join(base_remote_path, year, "CMS - AUTOSTAT",  month, client_folder).replace("\\", "/")
 
             st.write(f"🔌 Directory `{remote_path}` is ready")
             ftp = connect_to_ftp(hostname, port, username, password)
@@ -426,7 +238,7 @@ class BCPAutomation:
                 raise Exception("FTP connection failed")
 
             current_path = base_remote_path
-            for folder in [year, "CMS ENV1", month, client_folder]:
+            for folder in [year, "CMS - AUTOSTAT", month, client_folder]:
                 current_path = os.path.join(current_path, folder).replace("\\", "/")
                 try:
                     ftp.cwd(current_path)
@@ -488,7 +300,7 @@ class BCPAutomation:
             st.write(f"❌ Failed to upload files to FTP: {str(e)}")
 
     def display(self):
-        st.header("📤 CMS - AMEYO")
+        st.header("📤 CMS LATEST STATUS")
         
         chunk_size = st.number_input("Enter Chunk Size:", min_value=1, value=5000, step=100)
 

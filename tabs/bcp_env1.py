@@ -319,8 +319,6 @@ class BCPAutomationE1:
             return None
 
 
-
-
     def init_ftp(self, df_filtered, selected_client, chunk_size):
         try:
             # Define the FTP server configurations
@@ -516,11 +514,11 @@ class BCPAutomationE1:
 
         client_df = pd.DataFrame({
             'name': [
-                'RCBC'
+                'RCBC', 'BANKARD'
                 
             ],
             'id': [
-                 84
+                 84, 85
             ]
         })
 

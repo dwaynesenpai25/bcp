@@ -514,11 +514,11 @@ class BCPAutomationE3:
 
         # client_df = pd.DataFrame({
         #     'name': [
-        #         'RCBC'
+        #         'RCBC', 'BANKARD'
                 
         #     ],
         #     'id': [
-        #          84
+        #          84, 85
         #     ]
         # })
 

@@ -1,6 +1,7 @@
 import streamlit as st
-from tabs.bcp_automation import BCPAutomation
-from tabs.ameyo_extraction import ExtractAmey
+from tabs.bcp_stat import BCPAutomation
+# from tabs.ameyo_extraction import ExtractAmey
+from tabs.ameyo_sub import ameyo_main
 
 def main():
     tab1, tab2 = st.tabs(["BCP Automation Tool", "Extract to Ameyo"])
@@ -10,8 +11,8 @@ def main():
         bcp.display()
 
     with tab2:
-        amey = ExtractAmey()
-        amey.display()
+        print("This is the second tab")
+        ameyo_main()
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

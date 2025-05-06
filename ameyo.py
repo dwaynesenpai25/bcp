@@ -4,7 +4,8 @@ import re
 from streamlit_cookies_controller import CookieController
 from time import sleep
 import hashlib
-from tabs.ameyo_sub import main
+# from tabs.ameyo_sub import main
+from main import main
 from utils.session import *
 from utils.lark import *
 
@@ -14,7 +15,7 @@ cleanup_inactive_users()
 auth_url = f'https://open.larksuite.com/open-apis/authen/v1/authorize?app_id={APP_ID}&redirect_uri={REDIRECT_URI}'
 mode = 'production'
 
-# st.set_page_config(page_title="BANK REPORT", page_icon='🏛', layout="centered", initial_sidebar_state="auto")
+st.set_page_config(page_title="AMEYO - CMS", page_icon='🏛', layout="centered", initial_sidebar_state="auto")
 
 # Custom styling
 st.markdown("""
