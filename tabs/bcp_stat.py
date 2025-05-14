@@ -104,23 +104,25 @@ class BCPAutomation:
             return None
             
         ids = df_active['id'].dropna().unique().tolist()
-        st.write(f"Debtor IDs: {ids.__len__()}")
+        st.code(f"Active Accounts: {ids.__len__()}")
         try:
             dar_raw = self.dar(ids, selected_client_id, selected_port)
+            
             status_text = st.empty()
             status_text.text("Processing Templated Data...")
             start_time = time()
             
-            dar_df = dar_raw.copy()
-            dar_df = remove_data(dar_raw, status_code_col='STATUS CODE', remark_col='REMARKS')
-            dar_df['PTP AMOUNT'] = pd.to_numeric(dar_df['PTP AMOUNT'], errors='coerce').fillna(0).astype(int)
-            dar_df['CLAIM PAID AMOUNT'] = pd.to_numeric(dar_df['CLAIM PAID AMOUNT'], errors='coerce').fillna(0).astype(int)
+            # dar_df = dar_raw.copy()
+            dar_raw = remove_data(dar_raw, status_code_col='STATUS CODE', remark_col='REMARKS')
+            st.code(f"Total Cleaned Efforts: {dar_raw.__len__()}")    
+            dar_raw['PTP AMOUNT'] = pd.to_numeric(dar_raw['PTP AMOUNT'], errors='coerce').fillna(0).astype(int)
+            dar_raw['CLAIM PAID AMOUNT'] = pd.to_numeric(dar_raw['CLAIM PAID AMOUNT'], errors='coerce').fillna(0).astype(int)
 
-            dar_df.loc[:, 'REMARKS'] = dar_df['REMARKS'].str.replace('\n', ' ', regex=False)
-            dar_df.loc[:, "BARCODE DATE"] = pd.to_datetime(dar_df["BARCODE DATE"], errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
-            dar_df.loc[:, "PTP DATE"] = pd.to_datetime(dar_df["PTP DATE"], format='%d/%m/%Y', errors='coerce').dt.strftime('%Y-%m-%d')
-            dar_df.loc[:, "CLAIM PAID DATE"] = pd.to_datetime(dar_df["CLAIM PAID DATE"], format='%d/%m/%Y', errors='coerce').dt.strftime('%Y-%m-%d')
-            df_filtered = dar_df.replace([float("inf"), float("-inf"), pd.NA, "NA", None], "").fillna("")
+            dar_raw.loc[:, 'REMARKS'] = dar_raw['REMARKS'].str.replace('\n', ' ', regex=False)
+            dar_raw.loc[:, "BARCODE DATE"] = pd.to_datetime(dar_raw["BARCODE DATE"], errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
+            dar_raw.loc[:, "PTP DATE"] = pd.to_datetime(dar_raw["PTP DATE"], format='%d/%m/%Y', errors='coerce').dt.strftime('%Y-%m-%d')
+            dar_raw.loc[:, "CLAIM PAID DATE"] = pd.to_datetime(dar_raw["CLAIM PAID DATE"], format='%d/%m/%Y', errors='coerce').dt.strftime('%Y-%m-%d')
+            df_filtered = dar_raw.replace([float("inf"), float("-inf"), pd.NA, "NA", None], "").fillna("")
             # df_filtered = dar_df.fillna("")
             
             total_time = time() - start_time
@@ -334,7 +336,6 @@ class BCPAutomation:
                     # debtor_id = get_raw_file(file)
                     # df_filtered = self.process_data(debtor_id, selected_client, selected_client_id, selected_port)
                     df_filtered = self.process_data(selected_client, selected_client_id, selected_port)
-
                     if df_filtered is not None:
                         st.success("Data processed successfully! Ready to upload.")
                         st.write("Final Data:")

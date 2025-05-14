@@ -41,7 +41,7 @@ def remove_data(result, status_code_col='STATUS CODE', remark_col='REMARK'):
             ~result[remark_col].isna() &
             (result[remark_col].str.strip() != "") &
             ~result[remark_col].str.contains(
-                r"Updates when case reassign to another collector|New Contact Details Added|Broken Promise|New Assignment - OS|System Auto Update Remarks For PD", 
+                r"Updates when case reassign to another collector|New Contact Details Added|Broken Promise|New Assignment - OS", 
                 case=False, 
                 na=False
             ) &

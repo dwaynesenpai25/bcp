@@ -31,7 +31,7 @@ WITH RankedDispositions AS (
         LEFT JOIN `client` ON client.id = debtor.client_id
     WHERE client.id IN ({selected_client_id})
         AND debtor.id IN ({id_list})
-        AND followup.datetime IS NOT NULL
+        -- AND followup.datetime IS NOT NULL
 )
 SELECT
     ch_code,
